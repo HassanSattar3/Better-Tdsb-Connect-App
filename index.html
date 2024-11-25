@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <title>Routine Planner</title>
+</head>
+<body>
+  <div id="app">
+    <h1>Routine Planner</h1>
+    <form id="taskForm">
+      <div>
+        <label for="task1">Task 1:</label>
+        <input type="text" id="task1" placeholder="Enter Task 1" required>
+      </div>
+      <div>
+        <label for="task2">Task 2:</label>
+        <input type="text" id="task2" placeholder="Enter Task 2" required>
+      </div>
+      <div>
+        <label for="task3">Task 3:</label>
+        <input type="text" id="task3" placeholder="Generated Daily" readonly>
+      </div>
+      <div>
+        <label for="task4">Task 4:</label>
+        <input type="text" id="task4" placeholder="Generated Daily" readonly>
+      </div>
+      <button type="submit">Save Routine</button>
+    </form>
+    <p id="info"></p>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
