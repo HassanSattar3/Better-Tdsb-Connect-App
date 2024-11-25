@@ -1,52 +1,45 @@
-// Generate daily tasks for Task 3 and Task 4
-function getDailyTasks() {
-  const dailyTasks = {
-    monday: ["Task 3A", "Task 4A"],
-    tuesday: ["Task 3B", "Task 4B"],
-    wednesday: ["Task 3C", "Task 4C"],
-    thursday: ["Task 3D", "Task 4D"],
-    friday: ["Task 3E", "Task 4E"],
-    weekend: ["Relax", "Enjoy"]
-  };
-
+// Adjust the time schedule dynamically
+function adjustSchedule() {
   const today = new Date();
-  const day = today.getDay();
+  const isLastTwoWeeks = today.getDate() > 14;
+  const isWednesday = today.getDay() === 3; // Wednesday
 
-  return day === 0 || day === 6
-    ? dailyTasks.weekend
-    : dailyTasks[Object.keys(dailyTasks)[day - 1]];
+  const task3Label = document.getElementById("task3Label");
+  const task4Label = document.getElementById("task4Label");
+
+  if (isLastTwoWeeks && isWednesday) {
+    document.getElementById("info").textContent = "Adjusted schedule for Wednesday in the last two weeks of the month.";
+    task3Label.textContent = "Task 3 (1:05 PM - 2:10 PM):";
+    task4Label.textContent = "Task 4 (2:15 PM - 3:15 PM):";
+  } else {
+    task3Label.textContent = "Task 3 (12:40 PM - 1:55 PM):";
+    task4Label.textContent = "Task 4 (3:15 PM - 4:30 PM):";
+  }
 }
 
-// Update Task 3 and Task 4
-function updateDailyTasks() {
-  const [task3, task4] = getDailyTasks();
-  document.getElementById("task3").value = task3;
-  document.getElementById("task4").value = task4;
-}
-
-// Save Routine
+// Save routine to localStorage
 document.getElementById("taskForm").addEventListener("submit", (e) => {
   e.preventDefault();
+
   const task1 = document.getElementById("task1").value;
   const task2 = document.getElementById("task2").value;
+  const task3 = document.getElementById("task3").value;
+  const task4 = document.getElementById("task4").value;
 
-  const savedRoutine = {
-    task1,
-    task2,
-    task3: document.getElementById("task3").value,
-    task4: document.getElementById("task4").value,
-  };
-
-  localStorage.setItem("routine", JSON.stringify(savedRoutine));
-  document.getElementById("info").textContent = "Routine Saved!";
+  const routine = { task1, task2, task3, task4 };
+  localStorage.setItem("routine", JSON.stringify(routine));
+  document.getElementById("info").textContent = "Routine saved successfully!";
 });
 
-// Load Routine on App Start
+// Load routine on page load
 document.addEventListener("DOMContentLoaded", () => {
-  updateDailyTasks();
-  const savedRoutine = JSON.parse(localStorage.getItem("routine"));
-  if (savedRoutine) {
-    document.getElementById("task1").value = savedRoutine.task1;
-    document.getElementById("task2").value = savedRoutine.task2;
+  adjustSchedule();
+
+  const routine = JSON.parse(localStorage.getItem("routine"));
+  if (routine) {
+    document.getElementById("task1").value = routine.task1;
+    document.getElementById("task2").value = routine.task2;
+    document.getElementById("task3").value = routine.task3;
+    document.getElementById("task4").value = routine.task4;
   }
 });
