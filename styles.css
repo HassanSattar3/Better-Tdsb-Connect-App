@@ -1,5 +1,5 @@
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #f4f4f4;
   color: #333;
   margin: 0;
@@ -114,7 +114,7 @@ body {
 }
 
 input:checked + .slider {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 input:checked + .slider:before {
@@ -123,7 +123,7 @@ input:checked + .slider:before {
 
 .primary-btn {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   cursor: pointer;
@@ -162,7 +162,8 @@ body.dark-mode {
   color: #e0e0e0;
 }
 
-body.dark-mode #date-display, body.dark-mode #timetable {
+body.dark-mode #date-display,
+body.dark-mode #timetable {
   background-color: #333;
   color: #e0e0e0;
   border-color: #444;
@@ -182,10 +183,9 @@ body.dark-mode .slider:before {
 }
 
 body.dark-mode .primary-btn {
-  background-color: #388E3C;
+  background-color: #388e3c;
 }
 
 body.dark-mode .primary-btn:hover {
-  background-color: #2E7D32;
+  background-color: #2e7d32;
 }
-
