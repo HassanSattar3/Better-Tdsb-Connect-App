@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsPopup.style.display = "none";
   });
 
-  window.addEventListener("click", event => {
+  window.addEventListener("click", (event) => {
     if (event.target === settingsPopup) {
       settingsPopup.style.display = "none";
     }
@@ -62,7 +62,9 @@ function formatDate(date) {
   let month = date.getMonth() + 1; // Months are 0-based
   let day = date.getDate();
   let year = date.getFullYear();
-  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+  return `${year}-${month < 10 ? "0" + month : month}-${
+    day < 10 ? "0" + day : day
+  }`;
 }
 
 function checkAndSetDate() {
@@ -97,8 +99,12 @@ function displayDates() {
   const tomorrowDate = new Date(todayDate);
   tomorrowDate.setDate(todayDate.getDate() + 1);
 
-  document.getElementById("today-date").textContent = `Today: ${formatDate(todayDate)}`;
-  document.getElementById("tomorrow-date").textContent = `Tomorrow: ${formatDate(tomorrowDate)}`;
+  document.getElementById("today-date").textContent = `Today: ${formatDate(
+    todayDate
+  )}`;
+  document.getElementById(
+    "tomorrow-date"
+  ).textContent = `Tomorrow: ${formatDate(tomorrowDate)}`;
 }
 
 function isOddDay(date) {
@@ -128,13 +134,18 @@ function loadTimetable() {
   }
 }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, error => {
-          console.log('ServiceWorker registration failed: ', error);
-        });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").then(
+      (registration) => {
+        console.log(
+          "ServiceWorker registration successful with scope: ",
+          registration.scope
+        );
+      },
+      (error) => {
+        console.log("ServiceWorker registration failed: ", error);
+      }
+    );
   });
 }
