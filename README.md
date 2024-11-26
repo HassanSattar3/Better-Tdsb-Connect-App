@@ -55,4 +55,3 @@ Feel free to contribute to this project by creating a pull request or reporting 
 ## License
 
 This project is licensed under the MIT License.
-```
