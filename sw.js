@@ -7,7 +7,7 @@ self.addEventListener("install", (event) => {
       console.log("Opened cache");
       return cache.addAll(urlsToCache);
     })
-  );
+  ); 
 });
 
 self.addEventListener("fetch", (event) => {
