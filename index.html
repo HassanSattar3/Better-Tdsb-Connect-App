@@ -3,33 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable App</title>
   <link rel="stylesheet" href="styles.css">
-  <title>Routine Planner</title>
 </head>
 <body>
-  <div id="app">
-    <h1>Routine Planner</h1>
-    <form id="taskForm">
-      <div>
-        <label for="task1">Task 1 (9:00 AM - 10:15 AM):</label>
-        <input type="text" id="task1" placeholder="Enter Task 1" required>
-      </div>
-      <div>
-        <label for="task2">Task 2 (10:20 AM - 11:35 AM):</label>
-        <input type="text" id="task2" placeholder="Enter Task 2" required>
-      </div>
-      <div>
-        <label for="task3" id="task3Label">Task 3 (12:40 PM - 1:55 PM):</label>
-        <input type="text" id="task3" placeholder="Enter Task 3" required>
-      </div>
-      <div>
-        <label for="task4" id="task4Label">Task 4 (3:15 PM - 4:30 PM):</label>
-        <input type="text" id="task4" placeholder="Enter Task 4" required>
-      </div>
-      <button type="submit">Save Routine</button>
-    </form>
-    <p id="info"></p>
+<!-- Date and Time display -->
+<div id="date-display">
+  <p id="today-date"></p>
+  <p id="tomorrow-date"></p>
+</div>
+
+<!-- Settings Button -->
+<button id="settings-btn" class="icon-btn">
+  <i class="fas fa-cog"></i>
+</button>
+
+<!-- Settings Popup -->
+<div id="settings-popup" class="popup">
+  <div class="popup-content">
+    <span class="close-btn">&times;</span>
+    <h2>Settings</h2>
+    <label class="switch">
+      <input type="checkbox" id="dark-mode-toggle">
+      <span class="slider round"></span> Dark Mode
+    </label>
+    <div id="period-settings">
+      <label for="period1">Period 1:</label>
+      <input type="text" id="period1" placeholder="Enter Period 1 Task">
+      <label for="period2">Period 2:</label>
+      <input type="text" id="period2" placeholder="Enter Period 2 Task">
+      <label for="period3">Period 3:</label>
+      <input type="text" id="period3" placeholder="Enter Period 3 Task">
+      <label for="period4">Period 4:</label>
+      <input type="text" id="period4" placeholder="Enter Period 4 Task">
+    </div>
+    <button id="save-settings-btn" class="primary-btn">Save Settings</button>
   </div>
-  <script src="script.js"></script>
+</div>
+
+<!-- Timetable Display -->
+<div id="timetable">
+  <h2>Today's Timetable</h2>
+  <div id="timetable-items"></div>
+</div>
+
+<!-- Include the JavaScript file -->
+<script src="app.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </body>
 </html>
