@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  displayDates();
+  displayDates(); 
   loadTimetable();
 
   // Settings button
