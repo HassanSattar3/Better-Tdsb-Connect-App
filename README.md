@@ -1,6 +1,6 @@
 Here's a corrected version of your README with proper formatting for GitHub Markdown:
 
-```markdown
+
 # Timetable App
 
 A modern and sleek Progressive Web App (PWA) for managing your daily timetable. The app allows you to save and view your daily periods, switch between light and dark modes, and view a monthly calendar of your classes. It works offline and ensures data persistence.
