@@ -16,7 +16,7 @@ A modern and sleek Progressive Web App (PWA) for managing your daily timetable. 
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/timetable-app.git
+   git clone https://github.com/HassanSattar3/Better-Tdsb-Routine-App
    ```
 2. Navigate to the project directory:
    ```sh
@@ -55,4 +55,3 @@ Feel free to contribute to this project by creating a pull request or reporting 
 ## License
 
 This project is licensed under the MIT License.
-```
