@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  displayDates(); 
-  loadTimetable();
+  const today = new Date();
+  const formattedToday = formatDate(today);
+  loadTimetableForToday(formattedToday);
+  generateCalendar();
 
-  // Settings button
   const settingsBtn = document.getElementById("settings-btn");
   const settingsPopup = document.getElementById("settings-popup");
   const closeBtn = document.querySelector(".close-btn");
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsPopup.style.display = "none";
   });
 
-  window.addEventListener("click", (event) => {
+  window.addEventListener("click", event => {
     if (event.target === settingsPopup) {
       settingsPopup.style.display = "none";
     }
@@ -31,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.remove("dark-mode");
       localStorage.setItem("darkMode", "disabled");
     }
+    generateCalendar(); // Regenerate the calendar to apply the correct styles
   });
 
   saveSettingsBtn.addEventListener("click", () => {
@@ -47,11 +49,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     localStorage.setItem("timetable", JSON.stringify(timetable));
-    loadTimetable();
+    loadTimetableForToday(formattedToday); // Reload timetable for today
     settingsPopup.style.display = "none";
   });
 
-  // Load settings
   if (localStorage.getItem("darkMode") === "enabled") {
     darkModeToggle.checked = true;
     document.body.classList.add("dark-mode");
@@ -59,69 +60,49 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function formatDate(date) {
-  let month = date.getMonth() + 1; // Months are 0-based
-  let day = date.getDate();
-  let year = date.getFullYear();
-  return `${year}-${month < 10 ? "0" + month : month}-${
-    day < 10 ? "0" + day : day
-  }`;
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 }
 
-function checkAndSetDate() {
-  const currentDate = new Date();
-  const storedDate = localStorage.getItem("storedDate");
+function formatMonthDay(date) {
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const month = date.getMonth();
+  const day = date.getDate();
+  return day === 1 ? `${monthNames[month]}` : `${monthNames[month]} ${day}`;
+}
 
-  if (!storedDate) {
-    const formattedDate = formatDate(currentDate);
-    localStorage.setItem("storedDate", formattedDate);
-    return formattedDate;
+function getDayType(date) {
+  const startDate = new Date(localStorage.getItem("startDate"));
+  const currentDate = new Date(date);
+  const diffTime = Math.abs(currentDate - startDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays % 2 === 0 ? 'Day 1' : 'Day 2';
+}
+
+function displayDayType(date, isToday = true) {
+  const dayType = getDayType(date);
+  const displayDate = formatMonthDay(new Date(date));
+  if (isToday) {
+    document.getElementById("day-indicator").textContent = `Today is ${dayType}`;
+  } else {
+    document.getElementById("day-indicator").textContent = `${displayDate} is ${dayType}`;
   }
-
-  const storedDateObject = new Date(storedDate);
-  if (currentDate > storedDateObject) {
-    let nextDay = new Date(storedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    if (nextDay.getDate() === 1) {
-      nextDay.setMonth(nextDay.getMonth() + 1);
-    }
-
-    localStorage.setItem("storedDate", formatDate(nextDay));
-    return formatDate(nextDay);
-  }
-
-  return storedDate;
 }
 
-const today = checkAndSetDate();
-
-function displayDates() {
-  const todayDate = new Date(today);
-  const tomorrowDate = new Date(todayDate);
-  tomorrowDate.setDate(todayDate.getDate() + 1);
-
-  document.getElementById("today-date").textContent = `Today: ${formatDate(
-    todayDate
-  )}`;
-  document.getElementById(
-    "tomorrow-date"
-  ).textContent = `Tomorrow: ${formatDate(tomorrowDate)}`;
-}
-
-function isOddDay(date) {
-  return date.getDate() % 2 !== 0;
-}
-
-function loadTimetable() {
+function loadTimetable(date) {
   const timetable = JSON.parse(localStorage.getItem("timetable"));
 
   if (timetable) {
     const timetableItems = document.getElementById("timetable-items");
 
-    const todayDate = new Date(today);
+    const dayType = getDayType(date);
     let period3 = timetable.period3;
     let period4 = timetable.period4;
 
-    if (isOddDay(todayDate)) {
+    if (dayType === 'Day 2') {
       [period3, period4] = [period4, period3];
     }
 
@@ -131,21 +112,61 @@ function loadTimetable() {
       <div>Period 3: ${period3}</div>
       <div>Period 4: ${period4}</div>
     `;
+
+    console.log(`Timetable for ${date}: Period 1 - ${timetable.period1}, Period 2 - ${timetable.period2}, Period 3 - ${period3}, Period 4 - ${period4}`);
   }
 }
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").then(
-      (registration) => {
-        console.log(
-          "ServiceWorker registration successful with scope: ",
-          registration.scope
-        );
-      },
-      (error) => {
-        console.log("ServiceWorker registration failed: ", error);
-      }
-    );
+function generateCalendar() {
+  const calendarDiv = document.getElementById("calendar");
+  const currentDate = new Date();
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+
+  const monthDays = new Date(year, month + 1, 0).getDate();
+  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr>";
+
+  // Get the day of the week the month starts on
+  const firstDay = new Date(year, month, 1).getDay();
+
+  // Fill in the blank days at the start of the month
+  for (let i = 0; i < firstDay; i++) {
+    calendarHTML += "<td></td>";
+  }
+
+  for (let i = 1; i <= monthDays; i++) {
+    const date = new Date(year, month, i);
+    const dayType = getDayType(formatDate(date));
+    calendarHTML += `<td class="${dayType.toLowerCase().replace(' ', '')}" data-date="${formatDate(date)}">${i}<br>(${dayType})</td>`;
+    if ((i + firstDay) % 7 === 0) {
+      calendarHTML += "</tr><tr>";
+    }
+  }
+  calendarHTML += "</tr></tbody></table>";
+
+  calendarDiv.innerHTML = calendarHTML;
+
+  // Add click event listeners to calendar days
+  document.querySelectorAll(".calendar-container td").forEach(day => {
+    day.addEventListener("click", () => {
+      const date = day.getAttribute("data-date");
+      displayTimetableForDate(date);
+    });
   });
 }
+
+function loadTimetableForToday(date) {
+  displayDayType(date, true); // Display "Today is"
+  loadTimetable(date); // Load the timetable for today
+}
+
+function displayTimetableForDate(date) {
+  const dayType = getDayType(new Date(date));
+  const displayDate = new Date(date);
+  displayDate.setDate(displayDate.getDate() + 1); // Add 1 to the date for title
+
+  document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is ${dayType}`;
+
+  loadTimetable(date); // Load the timetable for the selected date
+}
+
