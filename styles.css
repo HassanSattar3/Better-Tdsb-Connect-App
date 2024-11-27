@@ -1,21 +1,9 @@
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   background-color: #f4f4f4;
   color: #333;
   margin: 0;
   padding: 0;
-  display: flex; 
-  flex-direction: column;
-  align-items: center;
-}
-
-#date-display {
-  margin: 20px;
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,6 +28,7 @@ body {
 }
 
 .popup {
+  display: none;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -81,6 +70,7 @@ body {
   display: inline-block;
   width: 60px;
   height: 34px;
+  margin-bottom: 15px; /* Adjust this value to move the toggle up or down */
 }
 
 .switch input {
@@ -114,7 +104,7 @@ body {
 }
 
 input:checked + .slider {
-  background-color: #4caf50;
+  background-color: #4CAF50;
 }
 
 input:checked + .slider:before {
@@ -123,7 +113,7 @@ input:checked + .slider:before {
 
 .primary-btn {
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
@@ -149,6 +139,7 @@ input:checked + .slider:before {
 
 #timetable h2 {
   margin: 0;
+  text-align: center;
 }
 
 #timetable-items {
@@ -162,8 +153,7 @@ body.dark-mode {
   color: #e0e0e0;
 }
 
-body.dark-mode #date-display,
-body.dark-mode #timetable {
+body.dark-mode #date-display, body.dark-mode #timetable, body.dark-mode #calendar {
   background-color: #333;
   color: #e0e0e0;
   border-color: #444;
@@ -183,9 +173,82 @@ body.dark-mode .slider:before {
 }
 
 body.dark-mode .primary-btn {
-  background-color: #388e3c;
+  background-color: #388E3C;
 }
 
 body.dark-mode .primary-btn:hover {
-  background-color: #2e7d32;
+  background-color: #2E7D32;
 }
+
+.calendar-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+}
+
+.calendar-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-container th, .calendar-container td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.calendar-container th {
+  background-color: #f2f2f2;
+}
+
+.calendar-container td.day1 {
+  background-color: #f0f8ff;
+}
+
+.calendar-container td.day2 {
+  background-color: #ffe4e1;
+}
+
+.calendar-container td:hover {
+  background-color: #ddd;
+}
+
+body.dark-mode .calendar-container {
+  background-color: #333;
+  border-color: #444;
+}
+
+body.dark-mode .calendar-container th {
+  background-color: #555;
+}
+
+body.dark-mode .calendar-container td {
+  border-color: #444;
+}
+
+body.dark-mode .calendar-container td.day1 {
+  background-color: #455a64;
+}
+
+body.dark-mode .calendar-container td.day2 {
+  background-color: #78909c;
+}
+
+#calendar-detail {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+  display: none; /* Hidden by default */
+}
+
