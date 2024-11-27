@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
   const formattedToday = formatDate(today);
-  loadTimetableForToday(formattedToday);
+  const isLateStart = checkIfLateStart(today);
+  loadTimetableForToday(formattedToday, isLateStart);
   generateCalendar();
 
   const settingsBtn = document.getElementById("settings-btn");
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     localStorage.setItem("timetable", JSON.stringify(timetable));
-    loadTimetableForToday(formattedToday); // Reload timetable for today
+    loadTimetableForToday(formattedToday, isLateStart); // Reload timetable for today
     settingsPopup.style.display = "none";
   });
 
@@ -82,17 +83,18 @@ function getDayType(date) {
   return diffDays % 2 === 0 ? 'Day 1' : 'Day 2';
 }
 
-function displayDayType(date, isToday = true) {
+function displayDayType(date, isToday = true, isLateStart = false) {
   const dayType = getDayType(date);
   const displayDate = formatMonthDay(new Date(date));
+  const lateStartText = isLateStart ? " (Late Start)" : "";
   if (isToday) {
-    document.getElementById("day-indicator").textContent = `Today is ${dayType}`;
+    document.getElementById("day-indicator").textContent = `Today is ${dayType}${lateStartText}`;
   } else {
-    document.getElementById("day-indicator").textContent = `${displayDate} is ${dayType}`;
+    document.getElementById("day-indicator").textContent = `${displayDate} is ${dayType}${lateStartText}`;
   }
 }
 
-function loadTimetable(date) {
+function loadTimetable(date, isLateStart) {
   const timetable = JSON.parse(localStorage.getItem("timetable"));
 
   if (timetable) {
@@ -129,6 +131,16 @@ function generateCalendar() {
   // Get the day of the week the month starts on
   const firstDay = new Date(year, month, 1).getDay();
 
+  // Identify the last two Wednesdays of the month
+  const lastTwoWednesdays = [];
+  for (let i = monthDays; i > 0; i--) {
+    const date = new Date(year, month, i);
+    if (date.getDay() === 3) { // Wednesday
+      lastTwoWednesdays.push(i);
+      if (lastTwoWednesdays.length === 2) break;
+    }
+  }
+
   // Fill in the blank days at the start of the month
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
@@ -137,7 +149,10 @@ function generateCalendar() {
   for (let i = 1; i <= monthDays; i++) {
     const date = new Date(year, month, i);
     const dayType = getDayType(formatDate(date));
-    calendarHTML += `<td class="${dayType.toLowerCase().replace(' ', '')}" data-date="${formatDate(date)}">${i}<br>(${dayType})</td>`;
+    const isLateStart = lastTwoWednesdays.includes(i);
+    const cellClass = isLateStart ? "neon-purple" : dayType.toLowerCase().replace(' ', '');
+
+    calendarHTML += `<td class="${cellClass}" data-date="${formatDate(date)}" data-late-start="${isLateStart}">${i}<br>(${dayType})</td>`;
     if ((i + firstDay) % 7 === 0) {
       calendarHTML += "</tr><tr>";
     }
@@ -150,22 +165,40 @@ function generateCalendar() {
   document.querySelectorAll(".calendar-container td").forEach(day => {
     day.addEventListener("click", () => {
       const date = day.getAttribute("data-date");
-      displayTimetableForDate(date);
+      const isLateStart = day.getAttribute("data-late-start") === "true";
+      displayTimetableForDate(date, isLateStart);
     });
   });
 }
 
-function loadTimetableForToday(date) {
-  displayDayType(date, true); // Display "Today is"
+function loadTimetableForToday(date, isLateStart) {
+  displayDayType(date, true, isLateStart); // Display "Today is"
   loadTimetable(date); // Load the timetable for today
 }
 
-function displayTimetableForDate(date) {
+function checkIfLateStart(date) {
+  const currentDate = new Date(date);
+  const monthDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+
+  const lastTwoWednesdays = [];
+  for (let i = monthDays; i > 0; i--) {
+    const tempDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+    if (tempDate.getDay() === 3) { // Wednesday
+      lastTwoWednesdays.push(i);
+      if (lastTwoWednesdays.length === 2) break;
+    }
+  }
+
+  return lastTwoWednesdays.includes(currentDate.getDate());
+}
+
+function displayTimetableForDate(date, isLateStart) {
   const dayType = getDayType(new Date(date));
   const displayDate = new Date(date);
   displayDate.setDate(displayDate.getDate() + 1); // Add 1 to the date for title
 
-  document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is ${dayType}`;
+  const lateStartText = isLateStart ? " (Late Start)" : "";
+  document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is ${dayType}${lateStartText}`;
 
   loadTimetable(date); // Load the timetable for the selected date
 }

@@ -27,6 +27,7 @@ body {
   color: #555;
 }
 
+/* Initial hidden state */
 .popup {
   display: none;
   position: fixed;
@@ -37,6 +38,10 @@ body {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Display state */
+.popup.show {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,7 +75,7 @@ body {
   display: inline-block;
   width: 60px;
   height: 34px;
-  margin-bottom: 15px; /* Adjust this value to move the toggle up or down */
+  margin-bottom: 15px;
 }
 
 .switch input {
@@ -240,6 +245,12 @@ body.dark-mode .calendar-container td.day2 {
   background-color: #78909c;
 }
 
+.neon-purple {
+  background-color: #e100ff;
+  color: #fff;
+}
+
+
 #calendar-detail {
   margin-top: 20px;
   padding: 10px;
@@ -249,6 +260,5 @@ body.dark-mode .calendar-container td.day2 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 80%;
   max-width: 600px;
-  display: none; /* Hidden by default */
+  display: none;
 }
-
