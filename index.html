@@ -7,11 +7,6 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<!-- Date and Time display -->
-<div id="date-display">
-  <p id="today-date"></p>
-  <p id="tomorrow-date"></p>
-</div>
 
 <!-- Settings Button -->
 <button id="settings-btn" class="icon-btn">
@@ -43,9 +38,12 @@
 
 <!-- Timetable Display -->
 <div id="timetable">
-  <h2>Today's Timetable</h2>
+  <h2 id="day-indicator"></h2>
   <div id="timetable-items"></div>
 </div>
+
+<!-- Calendar Display -->
+<div id="calendar" class="calendar-container"></div>
 
 <!-- Include the JavaScript file -->
 <script src="app.js"></script>
