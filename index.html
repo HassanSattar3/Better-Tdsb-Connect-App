@@ -1,59 +1,53 @@
 <!DOCTYPE html>
-<html lang="en"> 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timetable App</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- Date and Time display -->
-    <div id="date-display">
-      <p id="today-date"></p>
-      <p id="tomorrow-date"></p>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Settings Button -->
+<button id="settings-btn" class="icon-btn">
+  <i class="fas fa-cog"></i>
+</button>
+
+<!-- Settings Popup -->
+<div id="settings-popup" class="popup">
+  <div class="popup-content">
+    <span class="close-btn">&times;</span>
+    <h2>Settings</h2>
+    <label class="switch">
+      <input type="checkbox" id="dark-mode-toggle">
+      <span class="slider round"></span> Dark Mode
+    </label>
+    <div id="period-settings">
+      <label for="period1">Period 1:</label>
+      <input type="text" id="period1" placeholder="Enter Period 1 Task">
+      <label for="period2">Period 2:</label>
+      <input type="text" id="period2" placeholder="Enter Period 2 Task">
+      <label for="period3">Period 3:</label>
+      <input type="text" id="period3" placeholder="Enter Period 3 Task">
+      <label for="period4">Period 4:</label>
+      <input type="text" id="period4" placeholder="Enter Period 4 Task">
     </div>
+    <button id="save-settings-btn" class="primary-btn">Save Settings</button>
+  </div>
+</div>
 
-    <!-- Settings Button -->
-    <button id="settings-btn" class="icon-btn">
-      <i class="fas fa-cog"></i>
-    </button>
+<!-- Timetable Display -->
+<div id="timetable">
+  <h2 id="day-indicator"></h2>
+  <div id="timetable-items"></div>
+</div>
 
-    <!-- Settings Popup -->
-    <div id="settings-popup" class="popup">
-      <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <h2>Settings</h2>
-        <label class="switch">
-          <input type="checkbox" id="dark-mode-toggle" />
-          <span class="slider round"></span> Dark Mode
-        </label>
-        <div id="period-settings">
-          <label for="period1">Period 1:</label>
-          <input type="text" id="period1" placeholder="Enter Period 1 Task" />
-          <label for="period2">Period 2:</label>
-          <input type="text" id="period2" placeholder="Enter Period 2 Task" />
-          <label for="period3">Period 3:</label>
-          <input type="text" id="period3" placeholder="Enter Period 3 Task" />
-          <label for="period4">Period 4:</label>
-          <input type="text" id="period4" placeholder="Enter Period 4 Task" />
-        </div>
-        <button id="save-settings-btn" class="primary-btn">
-          Save Settings
-        </button>
-      </div>
-    </div>
+<!-- Calendar Display -->
+<div id="calendar" class="calendar-container"></div>
 
-    <!-- Timetable Display -->
-    <div id="timetable">
-      <h2>Today's Timetable</h2>
-      <div id="timetable-items"></div>
-    </div>
-
-    <!-- Include the JavaScript file -->
-    <script src="app.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
-  </body>
+<!-- Include the JavaScript file -->
+<script src="app.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</body>
 </html>
+
