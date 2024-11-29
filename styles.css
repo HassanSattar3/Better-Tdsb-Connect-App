@@ -97,9 +97,6 @@ body {
   background-color: #ececec;
 }
 
-section#calendar h2 {
-  margin-bottom: -5000px; /* Reduced margin to bring the calendar content closer */
-}
 
 #calendar-content {
   margin-top: 20px; /* Set margin-top to 20 to move calendar text lower */
