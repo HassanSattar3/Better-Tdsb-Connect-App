@@ -1,29 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Ensure only the timetable section is visible on page load
+  document.querySelector('#timetable').style.display = 'flex';
+  document.querySelector('#settings').style.display = 'none';
+
+  // Navigation Links
+  const navLinks = document.querySelectorAll(".navbar a");
+  navLinks.forEach(link => {
+    link.addEventListener("click", function () {
+      const target = document.querySelector(this.getAttribute("href"));
+      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      target.style.display = "flex";
+    });
+  });
+
   const today = new Date();
   const formattedToday = formatDate(today);
   const isLateStart = checkIfLateStart(today);
   loadTimetableForToday(formattedToday, isLateStart);
   generateCalendar();
 
-  const settingsBtn = document.getElementById("settings-btn");
-  const settingsPopup = document.getElementById("settings-popup");
-  const closeBtn = document.querySelector(".close-btn");
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const saveSettingsBtn = document.getElementById("save-settings-btn");
-
-  settingsBtn.addEventListener("click", () => {
-    settingsPopup.style.display = "block";
-  });
-
-  closeBtn.addEventListener("click", () => {
-    settingsPopup.style.display = "none";
-  });
-
-  window.addEventListener("click", event => {
-    if (event.target === settingsPopup) {
-      settingsPopup.style.display = "none";
-    }
-  });
 
   darkModeToggle.addEventListener("change", () => {
     if (darkModeToggle.checked) {
@@ -51,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     localStorage.setItem("timetable", JSON.stringify(timetable));
     loadTimetableForToday(formattedToday, isLateStart); // Reload timetable for today
-    settingsPopup.style.display = "none";
+    alert("Settings saved successfully!"); // Show a success message
   });
 
   if (localStorage.getItem("darkMode") === "enabled") {
@@ -120,28 +117,30 @@ function loadTimetable(date, isLateStart) {
 }
 
 function generateCalendar() {
-  const calendarDiv = document.getElementById("calendar");
+  const calendarDiv = document.getElementById("calendar-content");
   const currentDate = new Date();
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
 
   const monthDays = new Date(year, month + 1, 0).getDate();
+  let calendarHTML = buildCalendarHTML(monthDays, month, year);
+
+  calendarDiv.innerHTML = calendarHTML;
+
+  document.querySelectorAll(".calendar-container td").forEach(day => {
+    day.addEventListener("click", () => {
+      const date = day.getAttribute("data-date");
+      const isLateStart = day.getAttribute("data-late-start") === "true";
+      displayTimetableForDate(date, isLateStart);
+    });
+  });
+}
+
+function buildCalendarHTML(monthDays, month, year) {
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
   let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr>";
 
-  // Get the day of the week the month starts on
-  const firstDay = new Date(year, month, 1).getDay();
-
-  // Identify the last two Wednesdays of the month
-  const lastTwoWednesdays = [];
-  for (let i = monthDays; i > 0; i--) {
-    const date = new Date(year, month, i);
-    if (date.getDay() === 3) { // Wednesday
-      lastTwoWednesdays.push(i);
-      if (lastTwoWednesdays.length === 2) break;
-    }
-  }
-
-  // Fill in the blank days at the start of the month
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
   }
@@ -158,48 +157,38 @@ function generateCalendar() {
     }
   }
   calendarHTML += "</tr></tbody></table>";
+  return calendarHTML;
+}
 
-  calendarDiv.innerHTML = calendarHTML;
-
-  // Add click event listeners to calendar days
-  document.querySelectorAll(".calendar-container td").forEach(day => {
-    day.addEventListener("click", () => {
-      const date = day.getAttribute("data-date");
-      const isLateStart = day.getAttribute("data-late-start") === "true";
-      displayTimetableForDate(date, isLateStart);
-    });
-  });
+function findLastTwoWednesdays(monthDays, month, year) {
+  const lastTwoWednesdays = [];
+  for (let i = monthDays; i > 0; i--) {
+    const date = new Date(year, month, i);
+    if (date.getDay() === 3) { // Wednesday
+      lastTwoWednesdays.push(i);
+      if (lastTwoWednesdays.length === 2) break;
+    }
+  }
+  return lastTwoWednesdays;
 }
 
 function loadTimetableForToday(date, isLateStart) {
-  displayDayType(date, true, isLateStart); // Display "Today is"
-  loadTimetable(date); // Load the timetable for today
+  displayDayType(date, true, isLateStart);
+  loadTimetable(date);
 }
 
 function checkIfLateStart(date) {
   const currentDate = new Date(date);
   const monthDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-
-  const lastTwoWednesdays = [];
-  for (let i = monthDays; i > 0; i--) {
-    const tempDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-    if (tempDate.getDay() === 3) { // Wednesday
-      lastTwoWednesdays.push(i);
-      if (lastTwoWednesdays.length === 2) break;
-    }
-  }
-
+  const lastTwoWednesdays = findLastTwoWednesdays(monthDays, currentDate.getMonth(), currentDate.getFullYear());
   return lastTwoWednesdays.includes(currentDate.getDate());
 }
 
 function displayTimetableForDate(date, isLateStart) {
   const dayType = getDayType(new Date(date));
   const displayDate = new Date(date);
-  displayDate.setDate(displayDate.getDate() + 1); // Add 1 to the date for title
-
+  displayDate.setDate(displayDate.getDate() + 1);
   const lateStartText = isLateStart ? " (Late Start)" : "";
   document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is ${dayType}${lateStartText}`;
-
-  loadTimetable(date); // Load the timetable for the selected date
+  loadTimetable(date);
 }
-// bleh
