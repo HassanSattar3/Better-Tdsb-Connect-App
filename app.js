@@ -71,7 +71,28 @@ function formatMonthDay(date) {
   return day === 1 ? `${monthNames[month]}` : `${monthNames[month]} ${day}`;
 }
 
+function getHolidays() {
+  return ["2024-11-29"]; // Add holidays here (e.g., "2024-11-29" for November 29th, 2024)
+}
+
+function isHoliday(date) {
+  const holidays = getHolidays();
+  return holidays.includes(date);
+}
+
+function handleHolidays(date) {
+  let currentDate = new Date(date);
+  while (isHoliday(formatDate(currentDate))) {
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return formatDate(currentDate);
+}
+
 function getDayType(date) {
+  if (isHoliday(date)) {
+    return 'Holiday';
+  }
+
   const startDate = new Date(localStorage.getItem("startDate"));
   const currentDate = new Date(date);
   const diffTime = Math.abs(currentDate - startDate);
@@ -81,15 +102,19 @@ function getDayType(date) {
 }
 
 function displayDayType(date, isToday = true, isLateStart = false) {
-  const dayType = getDayType(date);
-  const displayDate = formatMonthDay(new Date(date));
+  const dayType = isHoliday(date) ? 'Holiday' : getDayType(date);
+  const displayDate = new Date(date);
+  displayDate.setDate(displayDate.getDate() + 1); // Add one day
+  const formattedDisplayDate = formatMonthDay(displayDate);
   const lateStartText = isLateStart ? " (Late Start)" : "";
+
   if (isToday) {
     document.getElementById("day-indicator").textContent = `Today is ${dayType}${lateStartText}`;
   } else {
-    document.getElementById("day-indicator").textContent = `${displayDate} is ${dayType}${lateStartText}`;
+    document.getElementById("day-indicator").textContent = `${formattedDisplayDate} is ${dayType}${lateStartText}`;
   }
 }
+
 
 function loadTimetable(date, isLateStart) {
   const timetable = JSON.parse(localStorage.getItem("timetable"));
@@ -128,18 +153,26 @@ function generateCalendar() {
   calendarDiv.innerHTML = calendarHTML;
 
   document.querySelectorAll(".calendar-container td").forEach(day => {
-    day.addEventListener("click", () => {
-      const date = day.getAttribute("data-date");
-      const isLateStart = day.getAttribute("data-late-start") === "true";
-      displayTimetableForDate(date, isLateStart);
-    });
+    const date = day.getAttribute("data-date");
+    const isHolidayDate = isHoliday(date);
+    if (!isHolidayDate) {
+      day.addEventListener("click", () => {
+        const isLateStart = day.getAttribute("data-late-start") === "true";
+        displayTimetableForDate(date, isLateStart);
+      });
+    } else {
+      day.addEventListener("click", () => {
+        alert(`${formatMonthDay(new Date(date))} is a Holiday!`);
+        document.getElementById("day-indicator").textContent = `${formatMonthDay(new Date(date))} is a Holiday!`;
+      });
+    }
   });
 }
 
 function buildCalendarHTML(monthDays, month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
-  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr>";
+  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri></th><th>Sat</th></tr></thead><tbody><tr>";
 
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
@@ -147,11 +180,13 @@ function buildCalendarHTML(monthDays, month, year) {
 
   for (let i = 1; i <= monthDays; i++) {
     const date = new Date(year, month, i);
-    const dayType = getDayType(formatDate(date));
+    const formattedDate = formatDate(date);
+    const isHolidayDate = isHoliday(formattedDate);
+    const dayType = isHolidayDate ? 'Holiday' : getDayType(formattedDate);
     const isLateStart = lastTwoWednesdays.includes(i);
-    const cellClass = isLateStart ? "neon-purple" : dayType.toLowerCase().replace(' ', '');
+    const cellClass = isHolidayDate ? "holiday" : isLateStart ? "neon-purple" : dayType.toLowerCase().replace(' ', '');
 
-    calendarHTML += `<td class="${cellClass}" data-date="${formatDate(date)}" data-late-start="${isLateStart}">${i}<br>(${dayType})</td>`;
+    calendarHTML += `<td class="${cellClass}" data-date="${formattedDate}" data-late-start="${isLateStart}">${i}<br>(${dayType})</td>`;
     if ((i + firstDay) % 7 === 0) {
       calendarHTML += "</tr><tr>";
     }
@@ -185,10 +220,14 @@ function checkIfLateStart(date) {
 }
 
 function displayTimetableForDate(date, isLateStart) {
-  const dayType = getDayType(new Date(date));
-  const displayDate = new Date(date);
-  displayDate.setDate(displayDate.getDate() + 1);
-  const lateStartText = isLateStart ? " (Late Start)" : "";
-  document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is ${dayType}${lateStartText}`;
-  loadTimetable(date);
+  const isToday = false; // Since we're dealing with a clicked date, it's not "today"
+  if (isHoliday(date)) {
+    const displayDate = new Date(date);
+    displayDate.setDate(displayDate.getDate() + 1); // Add one day
+    document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is a Holiday!`;
+  } else {
+    displayDayType(date, isToday, isLateStart);
+    loadTimetable(date);
+  }
+
 }
