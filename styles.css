@@ -133,6 +133,15 @@ body {
   background-color: #ffe4e1;
 }
 
+#toggle-calendar-view {
+  margin-bottom: 20px;
+}
+
+#calendar-content h3 {
+  text-align: center;
+  margin-top: 20px;
+}
+
 .calendar-container td:hover {
   background-color: #ddd;
 }

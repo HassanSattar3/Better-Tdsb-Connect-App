@@ -72,7 +72,15 @@ function formatMonthDay(date) {
 }
 
 function getHolidays() {
-  return ["2024-11-29"]; // Add holidays here (e.g., "2024-11-29" for November 29th, 2024)
+  return [
+    "2024-12-23", "2024-12-24", "2024-12-25", "2024-12-26", "2024-12-27",
+    "2024-12-28", "2024-12-29", "2024-12-30", "2024-12-31", "2025-01-01",
+    "2025-01-02", "2025-01-03", "2025-01-30", "2024-02-14", "2025-02-17",
+    "2025-03-10", "2025-03-11", "2025-03-12", "2025-03-13", "2025-03-14",
+    "2025-04-18", "2025-04-21", "2025-05-19", "2025-06-26", "2025-06-27"
+  ];
+
+
 }
 
 function isHoliday(date) {
@@ -89,16 +97,18 @@ function handleHolidays(date) {
 }
 
 function getDayType(date) {
-  if (isHoliday(date)) {
-    return 'Holiday';
+  const startDate = new Date(localStorage.getItem("startDate"));
+  let currentDate = new Date(date);
+  let dayCounter = 0;
+
+  while (currentDate >= startDate) {
+    if (!isHoliday(formatDate(currentDate))) {
+      dayCounter++;
+    }
+    currentDate.setDate(currentDate.getDate() - 1);
   }
 
-  const startDate = new Date(localStorage.getItem("startDate"));
-  const currentDate = new Date(date);
-  const diffTime = Math.abs(currentDate - startDate);
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  return diffDays % 2 === 0 ? 'Day 1' : 'Day 2';
+  return dayCounter % 2 === 0 ? 'Day 1' : 'Day 2';
 }
 
 function displayDayType(date, isToday = true, isLateStart = false) {
@@ -114,7 +124,6 @@ function displayDayType(date, isToday = true, isLateStart = false) {
     document.getElementById("day-indicator").textContent = `${formattedDisplayDate} is ${dayType}${lateStartText}`;
   }
 }
-
 
 function loadTimetable(date, isLateStart) {
   const timetable = JSON.parse(localStorage.getItem("timetable"));
@@ -172,7 +181,7 @@ function generateCalendar() {
 function buildCalendarHTML(monthDays, month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
-  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri></th><th>Sat</th></tr></thead><tbody><tr>";
+  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon><th>Tue><th>Wed><th>Thu><th>Fri><th>Sat</th></tr></thead><tbody><tr>";
 
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
@@ -229,5 +238,4 @@ function displayTimetableForDate(date, isLateStart) {
     displayDayType(date, isToday, isLateStart);
     loadTimetable(date);
   }
-
 }
