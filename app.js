@@ -172,8 +172,10 @@ function generateCalendar() {
       });
     } else {
       day.addEventListener("click", () => {
-        alert(`${formatMonthDay(new Date(date))} is a Holiday!`);
-        document.getElementById("day-indicator").textContent = `${formatMonthDay(new Date(date))} is a Holiday!`;
+        const clickedDate = new Date(date);
+        clickedDate.setDate(clickedDate.getDate() + 1); // Add one day
+        alert(`${formatMonthDay(clickedDate)} is a Holiday!`);
+        document.getElementById("day-indicator").textContent = `${formatMonthDay(clickedDate)} is a Holiday!`;
       });
     }
   });
