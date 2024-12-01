@@ -97,9 +97,6 @@ body {
   background-color: #ececec;
 }
 
-section#calendar h2 {
-  margin-bottom: -5000px; /* Reduced margin to bring the calendar content closer */
-}
 
 #calendar-content {
   margin-top: 20px; /* Set margin-top to 20 to move calendar text lower */
@@ -134,6 +131,15 @@ section#calendar h2 {
 
 .calendar-container td.day2 {
   background-color: #ffe4e1;
+}
+
+#toggle-calendar-view {
+  margin-bottom: 20px;
+}
+
+#calendar-content h3 {
+  text-align: center;
+  margin-top: 20px;
 }
 
 .calendar-container td:hover {
@@ -204,7 +210,8 @@ body.dark-mode #timetable-items div:hover {
   display: inline-block;
   width: 60px;
   height: 34px;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
+  vertical-align: middle;
 }
 
 .switch input {
@@ -318,3 +325,10 @@ body.dark-mode #period-settings input:hover {
 }
 
 /* test */
+
+.switch + span {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
