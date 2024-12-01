@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     generateCalendar(); // Regenerate the calendar to apply the correct styles
   });
 
+
   saveSettingsBtn.addEventListener("click", () => {
     const period1 = document.getElementById("period1").value;
     const period2 = document.getElementById("period2").value;

@@ -20,10 +20,13 @@
 <!-- Settings Section -->
 <section id="settings" class="section hidden">
   <h2>Settings</h2>
-  <label class="switch">
-    <input type="checkbox" id="dark-mode-toggle">
-    <span class="slider round"></span> Dark Mode
-  </label>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <label class="switch">
+      <input type="checkbox" id="dark-mode-toggle">
+      <span class="slider round"></span>
+    </label>
+    <span>Dark Mode</span>
+  </div>
   <div id="period-settings">
     <label for="period1">Period 1:</label>
     <input type="text" id="period1" placeholder="Enter Period 1 Task">

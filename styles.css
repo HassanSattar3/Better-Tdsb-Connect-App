@@ -210,7 +210,8 @@ body.dark-mode #timetable-items div:hover {
   display: inline-block;
   width: 60px;
   height: 34px;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
+  vertical-align: middle;
 }
 
 .switch input {
@@ -324,3 +325,10 @@ body.dark-mode #period-settings input:hover {
 }
 
 /* test */
+
+.switch + span {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
