@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     generateCalendar(); // Regenerate the calendar to apply the correct styles
   });
 
+
   saveSettingsBtn.addEventListener("click", () => {
     const period1 = document.getElementById("period1").value;
     const period2 = document.getElementById("period2").value;
@@ -171,8 +172,10 @@ function generateCalendar() {
       });
     } else {
       day.addEventListener("click", () => {
-        alert(`${formatMonthDay(new Date(date))} is a Holiday!`);
-        document.getElementById("day-indicator").textContent = `${formatMonthDay(new Date(date))} is a Holiday!`;
+        const clickedDate = new Date(date);
+        clickedDate.setDate(clickedDate.getDate() + 1); // Add one day
+        alert(`${formatMonthDay(clickedDate)} is a Holiday!`);
+        document.getElementById("day-indicator").textContent = `${formatMonthDay(clickedDate)} is a Holiday!`;
       });
     }
   });
