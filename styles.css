@@ -332,3 +332,43 @@ body.dark-mode #period-settings input:hover {
   font-weight: bold;
   margin-bottom: 20px;
 }
+
+.calendar-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.calendar-container table {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 100%;
+}
+
+.calendar-container td {
+  width: 14.28%; /* 100% / 7 days */
+  min-width: 40px;
+  word-wrap: break-word;
+}
+
+.calendar-container td.holiday {
+  background-color: #ff6b6b;  /* A soft red color */
+  color: white;
+}
+
+/* For dark mode */
+body.dark-mode .calendar-container td.holiday {
+  background-color: #8b0000;  /* A darker red for dark mode */
+  color: white;
+}
+
+/* For light mode */
+.calendar-container td.holiday:hover {
+  background-color: #ff5252;  /* Slightly darker red on hover */
+  cursor: pointer;
+}
+
+/* For dark mode */
+body.dark-mode .calendar-container td.holiday:hover {
+  background-color: #660000;  /* Darker red for dark mode hover */
+  cursor: pointer;
+}
