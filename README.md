@@ -7,8 +7,6 @@ $\textcolor{red}{\text{This app is not made by TDSB and is not affiliated with T
 
 A modern and sleek Progressive Web App (PWA) for managing your daily timetable. The app allows you to save and view your daily periods, switch between light and dark modes, and view a monthly calendar of your classes. It works offline and ensures data persistence.
 
-**Note: This app is a proof of concept and is not finished yet.**
-
 ## Features
 
 - **Daily Timetable**: View your timetable for the day with periods that swap positions daily.
