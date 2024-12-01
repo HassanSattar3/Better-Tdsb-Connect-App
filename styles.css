@@ -360,3 +360,15 @@ body.dark-mode .calendar-container td.holiday {
   background-color: #8b0000;  /* A darker red for dark mode */
   color: white;
 }
+
+/* For light mode */
+.calendar-container td.holiday:hover {
+  background-color: #ff5252;  /* Slightly darker red on hover */
+  cursor: pointer;
+}
+
+/* For dark mode */
+body.dark-mode .calendar-container td.holiday:hover {
+  background-color: #660000;  /* Darker red for dark mode hover */
+  cursor: pointer;
+}
