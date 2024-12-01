@@ -11,6 +11,11 @@ body {
   justify-content: center;
 }
 
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Navigation Bar */
 .navbar {
   width: 100%;
@@ -21,21 +26,40 @@ body {
   position: fixed;
   bottom: 0;
   left: 0;
+  padding: 8px 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 .navbar a {
-  display: block;
-  padding: 20px; /* Increased padding for better clickable area */
-}
-
-.navbar img, .navbar i {
-  width: 32px; /* Increased size for better clickable area */
-  height: 32px; /* Increased size for better clickable area */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  text-decoration: none;
   color: white;
+  font-size: 0.8rem;
+  transition: transform 0.2s;
 }
 
-.navbar img:hover, .navbar i:hover {
+.navbar a:active {
+  transform: scale(0.95);
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  color: white;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.nav-icon:hover {
   opacity: 0.7;
+}
+
+.nav-icon:active {
+  transform: scale(0.95);
 }
 
 .section {
@@ -45,7 +69,10 @@ body {
   align-items: center;
   width: 100%;
   height: calc(100vh - 50px); /* Adjust height to account for navbar */
-  padding: 20px;
+  padding: 16px;
+  padding-bottom: 80px; /* Increased to account for navbar */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .section:target {
@@ -57,12 +84,12 @@ body {
 }
 
 #timetable {
-  margin-top: 20px; /* Adjust margin-top to move the Timetable title */
-  padding: 20px;
+  margin-top: 0;
+  padding: 16px;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 90%;
   max-width: 600px;
   text-align: center;
@@ -70,10 +97,10 @@ body {
 
 #timetable h2 {
   margin: 0;
-  margin-bottom: 15px; /* Adjusted margin-bottom to move title */
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 24px;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 #timetable-items {
@@ -84,53 +111,51 @@ body {
 }
 
 #timetable-items div {
-  padding: 10px 15px;
+  padding: 16px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 18px;
+  border-radius: 12px;
+  font-size: 1rem;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 #timetable-items div:hover {
   background-color: #ececec;
 }
 
+#timetable-items div:active {
+  transform: scale(0.98);
+}
+
 
 #calendar-content {
-  margin-top: 20px; /* Set margin-top to 20 to move calendar text lower */
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 90%;
+  width: 100%;
   max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.calendar-container {
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
 }
 
 .calendar-container table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
+  font-size: 0.9rem;
 }
 
 .calendar-container th, .calendar-container td {
+  padding: 8px 4px;
   border: 1px solid #ddd;
-  padding: 10px;
   text-align: center;
-  cursor: pointer;
-}
-
-.calendar-container th {
-  background-color: #f2f2f2;
-}
-
-.calendar-container td.day1 {
-  background-color: #f0f8ff;
-}
-
-.calendar-container td.day2 {
-  background-color: #ffe4e1;
+  height: 40px; /* Fixed height for cells */
 }
 
 #toggle-calendar-view {
@@ -253,20 +278,25 @@ input:checked + .slider:before {
 }
 
 .primary-btn {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 12px;
   font-size: 16px;
   margin-top: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .primary-btn:hover {
   background-color: #45a049;
+}
+
+.primary-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 }
 
 #settings {
@@ -274,6 +304,12 @@ input:checked + .slider:before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  padding: 24px 16px;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 #period-settings {
@@ -290,10 +326,18 @@ input:checked + .slider:before {
 }
 
 #period-settings input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  margin-bottom: 16px;
+}
+
+#period-settings input:focus {
+  outline: none;
+  border-color: #4CAF50;
 }
 
 body.dark-mode #period-settings input {
@@ -334,20 +378,13 @@ body.dark-mode #period-settings input:hover {
 }
 
 .calendar-container {
-  overflow-x: auto;
-  max-width: 100%;
-}
-
-.calendar-container table {
-  width: 100%;
-  table-layout: fixed;
-  min-width: 100%;
+  overflow-x: visible;
+  max-width: none;
 }
 
 .calendar-container td {
-  width: 14.28%; /* 100% / 7 days */
-  min-width: 40px;
-  word-wrap: break-word;
+  width: auto; /* Remove fixed width */
+  min-width: auto; /* Remove min-width */
 }
 
 .calendar-container td.holiday {
@@ -371,4 +408,69 @@ body.dark-mode .calendar-container td.holiday {
 body.dark-mode .calendar-container td.holiday:hover {
   background-color: #660000;  /* Darker red for dark mode hover */
   cursor: pointer;
+}
+
+/* Add responsive font sizes */
+@media (max-width: 480px) {
+  #timetable h2 {
+    font-size: 1.25rem;
+  }
+  
+  #timetable-items div {
+    font-size: 0.9rem;
+  }
+  
+  .calendar-container td {
+    font-size: 0.8rem;
+  }
+}
+
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Make the calendar more compact on mobile */
+@media (max-width: 480px) {
+  .calendar-container table {
+    font-size: 0.8rem;
+  }
+
+  .calendar-container th, .calendar-container td {
+    padding: 4px 2px;
+    height: 32px; /* Smaller height on mobile */
+  }
+  
+  #calendar-content {
+    padding: 8px;
+    margin-top: 16px;
+  }
+  
+  .calendar-container td {
+    font-size: 0.75rem;
+  }
+}
+
+/* Add these styles for weekend cells */
+.calendar-container td.weekend {
+    background-color: #f5f5f5;
+    color: #999;
+    font-style: italic;
+}
+
+/* Dark mode styles for weekends */
+body.dark-mode .calendar-container td.weekend {
+    background-color: #2a2a2a;
+    color: #666;
+}
+
+/* Remove hover effects from weekend cells */
+.calendar-container td.weekend:hover {
+    background-color: #f5f5f5;
+    cursor: default;
+}
+
+body.dark-mode .calendar-container td.weekend:hover {
+    background-color: #2a2a2a;
+    cursor: default;
 }

@@ -97,19 +97,27 @@ function handleHolidays(date) {
   return formatDate(currentDate);
 }
 
+function isWeekend(date) {
+  const day = date.getDay();
+  return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+}
+
 function getDayType(date) {
-  const startDate = new Date(localStorage.getItem("startDate"));
-  let currentDate = new Date(date);
-  let dayCounter = 0;
-
-  while (currentDate >= startDate) {
-    if (!isHoliday(formatDate(currentDate))) {
-      dayCounter++;
-    }
-    currentDate.setDate(currentDate.getDate() - 1);
+  // Set the fixed start date to November 30, 2023
+  const startDate = new Date('2023-11-30');
+  const currentDate = new Date(date);
+  
+  // First check if it's a holiday
+  if (isHoliday(formatDate(currentDate))) {
+    return 'Holiday';
   }
-
-  return dayCounter % 2 === 0 ? 'Day 1' : 'Day 2';
+  
+  // Calculate days since start
+  const timeDiff = currentDate.getTime() - startDate.getTime();
+  const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  
+  // Simple alternation between Day 1 and Day 2
+  return (daysSinceStart % 2 === 0) ? 'Day 1' : 'Day 2';
 }
 
 function displayDayType(date, isToday = true, isLateStart = false) {
