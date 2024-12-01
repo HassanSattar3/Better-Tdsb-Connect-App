@@ -129,7 +129,6 @@ body {
   transform: scale(0.98);
 }
 
-
 #calendar-content {
   width: 100%;
   max-width: 600px;
@@ -156,6 +155,15 @@ body {
   border: 1px solid #ddd;
   text-align: center;
   height: 40px; /* Fixed height for cells */
+}
+
+#toggle-calendar-view {
+  margin-bottom: 20px;
+}
+
+#calendar-content h3 {
+  text-align: center;
+  margin-top: 20px;
 }
 
 #toggle-calendar-view {
@@ -307,7 +315,7 @@ input:checked + .slider:before {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  padding: 24px 16px;
+  padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
@@ -378,13 +386,20 @@ body.dark-mode #period-settings input:hover {
 }
 
 .calendar-container {
-  overflow-x: visible;
-  max-width: none;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.calendar-container table {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 100%;
 }
 
 .calendar-container td {
-  width: auto; /* Remove fixed width */
-  min-width: auto; /* Remove min-width */
+  width: 14.28%; /* 100% / 7 days */
+  min-width: 40px;
+  word-wrap: break-word;
 }
 
 .calendar-container td.holiday {

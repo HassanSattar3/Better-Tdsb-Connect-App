@@ -1,4 +1,9 @@
-# Timetable App (Proof of Concept)
+# Timetable App
+### $\textcolor{orange}{\text{This app is currently in development.}}$
+## $\textcolor{red}{\text{Disclaimer}}$
+
+$\textcolor{red}{\text{This app is not made by TDSB and is not affiliated with TDSB in any way. It is an independent project developed by me}}$
+## Description
 
 A modern and sleek Progressive Web App (PWA) for managing your daily timetable. The app allows you to save and view your daily periods, switch between light and dark modes, and view a monthly calendar of your classes. It works offline and ensures data persistence.
 
