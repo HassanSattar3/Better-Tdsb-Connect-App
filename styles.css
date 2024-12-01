@@ -152,9 +152,10 @@ body {
 
 .calendar-container th, .calendar-container td {
   padding: 8px 4px;
+  height: 40px;
+  width: 14.5%;
   border: 1px solid #ddd;
   text-align: center;
-  height: 40px; /* Fixed height for cells */
 }
 
 #toggle-calendar-view {
@@ -397,7 +398,7 @@ body.dark-mode #period-settings input:hover {
 }
 
 .calendar-container td {
-  width: 14.28%; /* 100% / 7 days */
+  width: 14.5%; /* Adjusted width for more space */
   min-width: 40px;
   word-wrap: break-word;
 }
@@ -471,12 +472,14 @@ html {
     background-color: #f5f5f5;
     color: #999;
     font-style: italic;
+    font-size: 0.8rem; /* Smaller font size for weekend text */
 }
 
 /* Dark mode styles for weekends */
 body.dark-mode .calendar-container td.weekend {
     background-color: #2a2a2a;
     color: #666;
+    font-size: 0.8rem; /* Smaller font size for weekend text */
 }
 
 /* Remove hover effects from weekend cells */
@@ -488,4 +491,82 @@ body.dark-mode .calendar-container td.weekend {
 body.dark-mode .calendar-container td.weekend:hover {
     background-color: #2a2a2a;
     cursor: default;
+}
+
+/* Late start styling for light mode - will override holiday */
+.late-start {
+  background-color: #e6d8ff !important;
+  color: #000 !important;
+}
+
+/* Late start styling for dark mode - will override holiday */
+.dark-mode .late-start {
+  background-color: #6b42c9 !important;
+  color: #fff !important;
+}
+
+/* Dark mode hover states for calendar cells */
+body.dark-mode .calendar-container td:hover {
+  background-color: #222 !important; /* Darker shade when hovering in dark mode */
+}
+
+/* Dark mode hover states for timetable items */
+body.dark-mode #timetable-items div:hover {
+  background-color: #333 !important; /* Darker shade when hovering in dark mode */
+}
+
+/* Dark mode hover states for late start cells */
+body.dark-mode .late-start:hover {
+  background-color: #4f319a !important; /* Darker purple for late start hover */
+}
+
+/* Dark mode hover states for day1 cells */
+body.dark-mode .calendar-container td.day1:hover {
+  background-color: #2c3a42 !important; /* Darker shade for day1 hover */
+}
+
+/* Dark mode hover states for day2 cells */
+body.dark-mode .calendar-container td.day2:hover {
+  background-color: #546e7a !important; /* Darker shade for day2 hover */
+}
+
+/* Dark mode hover states for holiday cells */
+body.dark-mode .calendar-container td.holiday:hover {
+  background-color: #660000 !important; /* Darker red for holiday hover */
+}
+
+.weekend {
+  background-color: #f0f0f0; /* Light gray background for weekends */
+  pointer-events: none; /* Disable clicking */
+  color: #999; /* Gray text color */
+}
+
+.calendar-container td.weekend span {
+  font-size: 0.8rem; /* Smaller font size for weekend text */
+}
+
+/* Late start hover effect */
+.late-start:hover {
+  background-color: #b0b0b0 !important; /* Slightly darker grey for hover */
+  cursor: pointer;
+}
+
+/* Day 1 and Day 2 colors */
+.day1 {
+  background-color: #ffffff; /* White for Day 1 */
+}
+
+.day2 {
+  background-color: #f0f0f0; /* Light grey for Day 2 */
+}
+
+/* Ensure text is readable on these backgrounds */
+.day1, .day2, .late-start {
+  color: #333; /* Dark text for readability */
+}
+
+/* Late start hover effect */
+.calendar-container td.late-start {
+  background-color: #e6d8ff; /* Default light color for late start */
+  transition: background-color 0.3s; /* Smooth transition */
 }

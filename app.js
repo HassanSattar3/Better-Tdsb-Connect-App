@@ -189,10 +189,23 @@ function generateCalendar() {
   });
 }
 
+function isWeekendDate(date) {
+  const weekends = [
+    "2024-12-01", "2024-12-07", "2024-12-08", "2024-12-14", "2024-12-15", "2024-12-21", "2024-12-22", "2024-12-28", "2024-12-29",
+    "2025-01-04", "2025-01-05", "2025-01-11", "2025-01-12", "2025-01-18", "2025-01-19", "2025-01-25", "2025-01-26",
+    "2025-02-01", "2025-02-02", "2025-02-08", "2025-02-09", "2025-02-15", "2025-02-16", "2025-02-22", "2025-02-23",
+    "2025-03-01", "2025-03-02", "2025-03-08", "2025-03-09", "2025-03-15", "2025-03-16", "2025-03-22", "2025-03-23", "2025-03-29", "2025-03-30",
+    "2025-04-05", "2025-04-06", "2025-04-12", "2025-04-13", "2025-04-19", "2025-04-20", "2025-04-26", "2025-04-27",
+    "2025-05-03", "2025-05-04", "2025-05-10", "2025-05-11", "2025-05-17", "2025-05-18", "2025-05-24", "2025-05-25", "2025-05-31",
+    "2025-06-01", "2025-06-07", "2025-06-08", "2025-06-14", "2025-06-15", "2025-06-21", "2025-06-22", "2025-06-28", "2025-06-29"
+  ];
+  return weekends.includes(date);
+}
+
 function buildCalendarHTML(monthDays, month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
-  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon><th>Tue><th>Wed><th>Thu><th>Fri><th>Sat</th></tr></thead><tbody><tr>";
+  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr>";
 
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
@@ -201,10 +214,12 @@ function buildCalendarHTML(monthDays, month, year) {
   for (let i = 1; i <= monthDays; i++) {
     const date = new Date(year, month, i);
     const formattedDate = formatDate(date);
-    const isHolidayDate = isHoliday(formattedDate);
-    const dayType = isHolidayDate ? 'Holiday' : getDayType(formattedDate);
-    const isLateStart = lastTwoWednesdays.includes(i);
-    const cellClass = isHolidayDate ? "holiday" : isLateStart ? "neon-purple" : dayType.toLowerCase().replace(' ', '');
+    const isWeekend = isWeekendDate(formattedDate);
+    const isHolidayDate = !isWeekend && isHoliday(formattedDate); // Check holiday only if not a weekend
+    const dayType = isWeekend ? 'Weekend' : (isHolidayDate ? 'Holiday' : getDayType(formattedDate));
+    const isLateStart = !isHolidayDate && !isWeekend && lastTwoWednesdays.includes(i);
+    
+    let cellClass = isWeekend ? "weekend" : (isHolidayDate ? "holiday" : (isLateStart ? "late-start" : dayType.toLowerCase().replace(' ', '')));
 
     calendarHTML += `<td class="${cellClass}" data-date="${formattedDate}" data-late-start="${isLateStart}">${i}<br>(${dayType})</td>`;
     if ((i + firstDay) % 7 === 0) {
