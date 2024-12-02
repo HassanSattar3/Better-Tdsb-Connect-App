@@ -64,11 +64,8 @@ body {
 .section {
   display: none;
   opacity: 0;
-  position: absolute;
   width: 100%;
   max-width: 800px;
-  height: calc(100vh - 50px);
-  transition: opacity 0.3s ease;
   flex-direction: column;
   align-items: center;
 }
@@ -86,7 +83,7 @@ body {
 .section.active {
   display: flex;
   opacity: 1;
-  z-index: 1;
+  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .section:target {
@@ -682,7 +679,8 @@ body.dark-mode .calendar-container td.holiday:hover {
 
 /* Smooth transitions for all interactive elements */
 .section, .navbar a, #timetable-items div, .calendar-container td, .primary-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Enhanced timetable items with subtle shadows and animations */
@@ -1067,9 +1065,9 @@ body.dark-mode .navbar a {
 
 /* Add this animation for the editing state */
 @keyframes textEditPulse {
-  0% { background-color: rgba(0, 122, 255, 0.1); }
-  50% { background-color: rgba(0, 122, 255, 0.2); }
-  100% { background-color: rgba(0, 122, 255, 0.1); }
+  0% { background-color: rgba(0, 122, 255, 0.05); }
+  50% { background-color: rgba(0, 122, 255, 0.1); }
+  100% { background-color: rgba(0, 122, 255, 0.05); }
 }
 
 .period-text:focus {
@@ -1235,12 +1233,13 @@ body.dark-mode .navbar a {
 .sections-container {
   position: relative;
   width: 100%;
-  height: calc(100vh - 50px);
+  min-height: calc(100vh - 50px);
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 0 16px;
+  padding-bottom: 60px;
 }
 
 /* Dark mode styles for periods */
@@ -1271,9 +1270,9 @@ body.dark-mode .period-text:focus {
 /* Update the pulse animation for dark mode */
 @media (prefers-color-scheme: dark) {
   @keyframes textEditPulse {
-    0% { background-color: rgba(255, 255, 255, 0.1); }
-    50% { background-color: rgba(255, 255, 255, 0.15); }
-    100% { background-color: rgba(255, 255, 255, 0.1); }
+    0% { background-color: rgba(255, 255, 255, 0.05); }
+    50% { background-color: rgba(255, 255, 255, 0.1); }
+    100% { background-color: rgba(255, 255, 255, 0.05); }
   }
 }
 
@@ -1326,4 +1325,85 @@ body {
 .calendar-container {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
+}
+
+/* Update transition timing functions for smoother animations */
+.section, .navbar a, #timetable-items div, .calendar-container td, .primary-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Improve section transitions with a more natural easing */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px); /* Reduced distance for subtlety */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-15px); /* Reduced distance for subtlety */
+  }
+}
+
+/* Smoother hover transitions for calendar cells */
+.calendar-container td {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), /* Spring-like bounce */
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-container td:hover {
+  transform: scale(1.03); /* Reduced scale for subtlety */
+}
+
+/* Smoother navbar interactions */
+.navbar a {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.navbar a:active {
+  transform: scale(0.97); /* More subtle scale */
+}
+
+/* Improve button animations */
+.primary-btn {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s ease;
+}
+
+.primary-btn:active {
+  transform: scale(0.97);
+}
+
+/* Smoother dark mode toggle transition */
+body, .calendar-container, .navbar, #timetable-items div {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+/* Update text edit pulse animation to be more subtle */
+@keyframes textEditPulse {
+  0% { background-color: rgba(0, 122, 255, 0.05); }
+  50% { background-color: rgba(0, 122, 255, 0.1); }
+  100% { background-color: rgba(0, 122, 255, 0.05); }
+}
+
+/* Dark mode version of the pulse animation */
+@media (prefers-color-scheme: dark) {
+  @keyframes textEditPulse {
+    0% { background-color: rgba(255, 255, 255, 0.05); }
+    50% { background-color: rgba(255, 255, 255, 0.1); }
+    100% { background-color: rgba(255, 255, 255, 0.05); }
+  }
 }
