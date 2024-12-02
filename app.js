@@ -1,8 +1,27 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Ensure only the timetable section is visible on page load
-  document.querySelector('#timetable').style.display = 'flex';
-  document.querySelector('#settings').style.display = 'none';
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registration successful');
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Hide all sections first
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.display = 'none';
+    section.classList.remove('active');
+  });
+  
+  // Show timetable section
+  const timetableSection = document.querySelector('#timetable');
+  timetableSection.style.display = 'flex';
+  timetableSection.classList.add('active');
+  
   // Navigation Links
   const navLinks = document.querySelectorAll(".navbar a");
   navLinks.forEach(link => {
@@ -56,6 +75,53 @@ document.addEventListener("DOMContentLoaded", () => {
     darkModeToggle.checked = true;
     document.body.classList.add("dark-mode");
   }
+
+  // Setup period editing
+  const periodTexts = document.querySelectorAll('.period-text');
+  
+  periodTexts.forEach(periodText => {
+    // Load saved period text
+    const periodNumber = periodText.dataset.period;
+    const savedTimetable = JSON.parse(localStorage.getItem('timetable')) || {};
+    periodText.textContent = savedTimetable[`period${periodNumber}`] || '';
+
+    // Save on blur
+    periodText.addEventListener('blur', () => {
+      const timetable = JSON.parse(localStorage.getItem('timetable')) || {};
+      timetable[`period${periodNumber}`] = periodText.textContent.trim();
+      localStorage.setItem('timetable', JSON.stringify(timetable));
+      loadTimetableForToday(formatDate(new Date()), checkIfLateStart(new Date()));
+    });
+
+    // Handle Enter key
+    periodText.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        periodText.blur();
+      }
+    });
+
+    // Add input event listener for content changes
+    periodText.addEventListener('input', function() {
+      // Trim whitespace
+      this.textContent = this.textContent.trim();
+      
+      // Calculate content width
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.fontSize = window.getComputedStyle(this).fontSize;
+      tempSpan.style.fontFamily = window.getComputedStyle(this).fontFamily;
+      tempSpan.textContent = this.textContent;
+      document.body.appendChild(tempSpan);
+      
+      // Set width based on content (plus padding)
+      const contentWidth = tempSpan.offsetWidth;
+      this.style.width = `${Math.min(Math.max(contentWidth + 16, 100), 300)}px`;
+      
+      document.body.removeChild(tempSpan);
+    });
+  });
 });
 
 function formatDate(date) {
@@ -134,29 +200,28 @@ function displayDayType(date, isToday = true, isLateStart = false) {
   }
 }
 
-function loadTimetable(date, isLateStart) {
-  const timetable = JSON.parse(localStorage.getItem("timetable"));
-
-  if (timetable) {
-    const timetableItems = document.getElementById("timetable-items");
-
-    const dayType = getDayType(date);
-    let period3 = timetable.period3;
-    let period4 = timetable.period4;
-
-    if (dayType === 'Day 2') {
-      [period3, period4] = [period4, period3];
+function loadTimetable(date) {
+  const timetable = JSON.parse(localStorage.getItem('timetable')) || {};
+  const dayType = getDayType(date);
+  
+  document.querySelectorAll('.period-text').forEach((periodText, index) => {
+    const periodNumber = index + 1;
+    let periodContent = timetable[`period${periodNumber}`] || '';
+    
+    if (dayType === 'Day 2' && (periodNumber === 3 || periodNumber === 4)) {
+      const swappedNumber = periodNumber === 3 ? 4 : 3;
+      periodContent = timetable[`period${swappedNumber}`] || '';
     }
-
-    timetableItems.innerHTML = `
-      <div>Period 1: ${timetable.period1}</div>
-      <div>Period 2: ${timetable.period2}</div>
-      <div>Period 3: ${period3}</div>
-      <div>Period 4: ${period4}</div>
-    `;
-
-    console.log(`Timetable for ${date}: Period 1 - ${timetable.period1}, Period 2 - ${timetable.period2}, Period 3 - ${period3}, Period 4 - ${period4}`);
-  }
+    
+    periodText.textContent = periodContent;
+    
+    // Trigger input event to resize after setting content
+    const inputEvent = new Event('input', {
+      bubbles: true,
+      cancelable: true,
+    });
+    periodText.dispatchEvent(inputEvent);
+  });
 }
 
 function generateCalendar() {
@@ -205,7 +270,20 @@ function isWeekendDate(date) {
 function buildCalendarHTML(monthDays, month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
-  let calendarHTML = "<table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr>";
+  const isMobile = window.innerWidth <= 480;
+  
+  let calendarHTML = "<table><thead><tr>";
+  
+  // Shorter day names for mobile
+  const dayNames = isMobile ? 
+    ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] : 
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    
+  dayNames.forEach(day => {
+    calendarHTML += `<th>${day}</th>`;
+  });
+  
+  calendarHTML += "</tr></thead><tbody><tr>";
 
   for (let i = 0; i < firstDay; i++) {
     calendarHTML += "<td></td>";
@@ -215,13 +293,24 @@ function buildCalendarHTML(monthDays, month, year) {
     const date = new Date(year, month, i);
     const formattedDate = formatDate(date);
     const isWeekend = isWeekendDate(formattedDate);
-    const isHolidayDate = !isWeekend && isHoliday(formattedDate); // Check holiday only if not a weekend
+    const isHolidayDate = !isWeekend && isHoliday(formattedDate);
     const dayType = isWeekend ? 'Weekend' : (isHolidayDate ? 'Holiday' : getDayType(formattedDate));
     const isLateStart = !isHolidayDate && !isWeekend && lastTwoWednesdays.includes(i);
     
     let cellClass = isWeekend ? "weekend" : (isHolidayDate ? "holiday" : (isLateStart ? "late-start" : dayType.toLowerCase().replace(' ', '')));
+    
+    // Shorter day type labels for mobile
+    let displayDayType = dayType;
+    if (isMobile) {
+      displayDayType = dayType.replace('Day ', 'D');
+      if (displayDayType === 'Weekend') displayDayType = 'W';
+      if (displayDayType === 'Holiday') displayDayType = 'H';
+    }
 
-    calendarHTML += `<td class="${cellClass}" data-date="${formattedDate}" data-late-start="${isLateStart}">${i}<br>(${dayType})</td>`;
+    calendarHTML += `<td class="${cellClass}" data-date="${formattedDate}" data-late-start="${isLateStart}">
+      ${i}<br><span class="day-type">${displayDayType}</span>
+    </td>`;
+    
     if ((i + firstDay) % 7 === 0) {
       calendarHTML += "</tr><tr>";
     }
@@ -255,13 +344,56 @@ function checkIfLateStart(date) {
 }
 
 function displayTimetableForDate(date, isLateStart) {
-  const isToday = false; // Since we're dealing with a clicked date, it's not "today"
-  if (isHoliday(date)) {
-    const displayDate = new Date(date);
-    displayDate.setDate(displayDate.getDate() + 1); // Add one day
-    document.getElementById("day-indicator").textContent = `${formatMonthDay(displayDate)} is a Holiday!`;
-  } else {
-    displayDayType(date, isToday, isLateStart);
-    loadTimetable(date);
-  }
+  const dayIndicator = document.getElementById("day-indicator");
+  dayIndicator.style.animation = 'fadeOut 0.3s forwards';
+  
+  setTimeout(() => {
+    if (isHoliday(date)) {
+      const displayDate = new Date(date);
+      displayDate.setDate(displayDate.getDate() + 1);
+      dayIndicator.textContent = `${formatMonthDay(displayDate)} is a Holiday!`;
+    } else {
+      displayDayType(date, false, isLateStart);
+      loadTimetable(date);
+    }
+    dayIndicator.style.animation = 'fadeInUp 0.5s forwards';
+  }, 300);
 }
+
+function smoothTransition(from, to) {
+  from.style.animation = 'fadeOut 0.3s forwards';
+  
+  setTimeout(() => {
+    from.style.display = 'none';
+    to.style.display = 'flex';
+    to.style.animation = 'fadeInUp 0.5s forwards';
+  }, 300);
+}
+
+navLinks.forEach(link => {
+  link.addEventListener("click", function(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute("href").substring(1);
+    const currentSection = document.querySelector('.section.active');
+    const targetSection = document.getElementById(targetId);
+    
+    if (currentSection !== targetSection) {
+      // Start fade out of current section
+      currentSection.style.opacity = '0';
+      
+      setTimeout(() => {
+        // Hide current section and show target
+        currentSection.style.display = 'none';
+        currentSection.classList.remove('active');
+        
+        targetSection.style.display = 'flex';
+        // Force reflow
+        void targetSection.offsetWidth;
+        
+        // Start fade in of target section
+        targetSection.classList.add('active');
+        targetSection.style.opacity = '1';
+      }, 300);
+    }
+  });
+});
