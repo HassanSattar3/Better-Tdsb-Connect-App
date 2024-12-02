@@ -37,7 +37,7 @@ body {
   align-items: center;
   padding: 8px 16px;
   text-decoration: none;
-  color: white;
+  color: #1c1c1e;
   font-size: 0.8rem;
   transition: transform 0.2s;
 }
@@ -50,7 +50,6 @@ body {
   width: 24px;
   height: 24px;
   margin-bottom: 4px;
-  color: white;
   transition: opacity 0.2s, transform 0.2s;
 }
 
@@ -64,40 +63,44 @@ body {
 
 .section {
   display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  opacity: 0;
+  position: absolute;
   width: 100%;
-  height: calc(100vh - 50px); /* Adjust height to account for navbar */
-  padding: 16px;
-  padding-bottom: 80px; /* Increased to account for navbar */
-  max-width: 100%;
-  overflow-x: hidden;
+  max-width: 800px;
+  height: calc(100vh - 50px);
+  transition: opacity 0.3s ease;
+  flex-direction: column;
+  align-items: center;
+}
+
+#timetable {
+  margin: 0 auto;
+  padding: 32px 0;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section.active {
+  display: flex;
+  opacity: 1;
+  z-index: 1;
 }
 
 .section:target {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 .hidden {
   display: none;
 }
 
-#timetable {
-  margin-top: 0;
-  padding: 16px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-}
-
 #timetable h2 {
   margin: 0;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
@@ -106,32 +109,38 @@ body {
 #timetable-items {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Reduced gap to move periods up */
-  margin-bottom: 30px; /* Increased margin-bottom to add space before calendar title */
+  gap: 8px;
+  margin-bottom: 20px; /* Reduced margin before calendar */
 }
 
 #timetable-items div {
-  padding: 16px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-size: 1rem;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
+  margin: 16px 0;
+  padding: 8px 0;
+  font-size: 1.1rem;
+  color: #1c1c1e;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transform: none;
 }
 
-#timetable-items div:hover {
-  background-color: #ececec;
+#timetable-items div:last-child {
+  border-bottom: none;
 }
 
-#timetable-items div:active {
-  transform: scale(0.98);
+body.dark-mode #timetable-items div {
+  background: transparent;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
 }
 
 #calendar-content {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 8px;
   box-sizing: border-box;
@@ -139,23 +148,102 @@ body {
 
 .calendar-container {
   width: 100%;
-  margin-top: 0;
-  padding: 10px;
+  overflow-x: hidden;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 16px;
 }
 
 .calendar-container table {
   width: 100%;
+  border-spacing: 4px;
+  border-collapse: separate;
   table-layout: fixed;
-  border-collapse: collapse;
-  font-size: 0.9rem;
 }
 
-.calendar-container th, .calendar-container td {
-  padding: 8px 4px;
-  height: 40px;
-  width: 14.5%;
-  border: 1px solid #ddd;
+.calendar-container th,
+.calendar-container td {
   text-align: center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.calendar-container td {
+  height: 60px;
+  vertical-align: top;
+  transition: transform 0.2s ease;
+}
+
+.day-type {
+  font-size: 0.8rem;
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 480px) {
+  .calendar-container {
+    padding: 8px 4px;
+    margin-top: 12px;
+  }
+
+  .calendar-container table {
+    border-spacing: 2px;
+  }
+
+  .calendar-container th {
+    font-size: 0.7rem;
+    padding: 4px 2px;
+  }
+
+  .calendar-container td {
+    height: 48px;
+    padding: 4px 2px;
+    font-size: 0.8rem;
+  }
+
+  .day-type {
+    font-size: 0.65rem;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* Make late start indicator more compact */
+  .late-start::after {
+    content: "LS";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.6rem;
+    background: rgba(255, 45, 85, 0.2);
+    padding: 1px 2px;
+    border-radius: 3px;
+  }
+
+  /* Hide br tags on mobile */
+  .calendar-container td br {
+    display: none;
+  }
+  
+  /* Adjust spacing for calendar title */
+  #timetable h2:last-of-type {
+    font-size: 1.1rem;
+    margin: 16px 0 8px 0;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .calendar-container td {
+    height: 40px;
+    font-size: 0.7rem;
+  }
+
+  .day-type {
+    font-size: 0.6rem;
+  }
 }
 
 #toggle-calendar-view {
@@ -230,13 +318,22 @@ body.dark-mode .calendar-container td:hover {
 }
 
 body.dark-mode #timetable-items div {
-  background-color: #444;
   color: #e0e0e0;
-  border-color: #555;
+  background-color: transparent;
 }
 
 body.dark-mode #timetable-items div:hover {
-  background-color: #555;
+  background-color: transparent;
+}
+
+body.dark-mode #timetable {
+  background-color: transparent;
+  color: #e0e0e0;
+  border: none;
+}
+
+body.dark-mode #timetable h2 {
+  color: #e0e0e0;
 }
 
 .switch {
@@ -309,24 +406,19 @@ input:checked + .slider:before {
 }
 
 #settings {
+  margin: 0 auto;
+  padding: 32px 0;
+  width: 100%;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
 }
 
 #period-settings {
   width: 100%;
   max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 0 16px;
 }
 
 #period-settings label {
@@ -493,16 +585,33 @@ body.dark-mode .calendar-container td.weekend:hover {
     cursor: default;
 }
 
-/* Late start styling for light mode - will override holiday */
+/* Late start styling for light mode */
 .late-start {
-  background-color: #e6d8ff !important;
-  color: #000 !important;
+  background: #ffebf3 !important; /* Lighter, more saturated pink */
+  color: #ff375f !important; /* Apple's system pink color */
+  font-weight: 500 !important;
 }
 
-/* Late start styling for dark mode - will override holiday */
-.dark-mode .late-start {
-  background-color: #6b42c9 !important;
-  color: #fff !important;
+/* Late start hover effect */
+.late-start:hover {
+  background: #ffd9e6 !important; /* Slightly darker on hover */
+}
+
+/* Calendar container td.late-start override */
+.calendar-container td.late-start {
+  background: #ffebf3 !important; /* Match the new color */
+  border: 1px solid rgba(255, 55, 95, 0.2) !important; /* Subtle border */
+  box-shadow: 0 2px 8px rgba(255, 55, 95, 0.1) !important;
+}
+
+/* Dark mode late start remains the same */
+body.dark-mode .late-start {
+  background: rgba(255, 45, 85, 0.2) !important;
+  color: #FF375F !important;
+}
+
+body.dark-mode .late-start:hover {
+  background: rgba(255, 45, 85, 0.3) !important;
 }
 
 /* Dark mode hover states for calendar cells */
@@ -569,4 +678,601 @@ body.dark-mode .calendar-container td.holiday:hover {
 .calendar-container td.late-start {
   background-color: #e6d8ff; /* Default light color for late start */
   transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Smooth transitions for all interactive elements */
+.section, .navbar a, #timetable-items div, .calendar-container td, .primary-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced timetable items with subtle shadows and animations */
+#timetable-items div {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin: 8px 0;
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#timetable-items div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode timetable items */
+body.dark-mode #timetable-items div {
+  background: rgba(40, 40, 40, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced calendar cells */
+.calendar-container td {
+  border-radius: 8px;
+  border: none;
+  margin: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: scale(1);
+}
+
+.calendar-container td:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced navigation bar */
+.navbar {
+  background: rgba(76, 175, 80, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+  transform: translateY(0);
+}
+
+.navbar a:hover {
+  transform: translateY(-2px);
+}
+
+/* Enhanced buttons */
+.primary-btn {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  transform: translateY(0);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Settings inputs enhancement */
+#period-settings input {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#period-settings input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  border-color: #4CAF50;
+}
+
+/* Dark mode input fields */
+body.dark-mode #period-settings input {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Section transitions */
+.section {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced dark mode switch */
+.switch {
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+.switch:hover {
+  transform: scale(1.05);
+}
+
+.slider {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Typography enhancements */
+h2 {
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+/* Calendar container enhancement */
+.calendar-container {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-top: 20px;
+}
+
+body.dark-mode .calendar-container {
+  background: rgba(40, 40, 40, 0.8);
+}
+
+/* Add these new keyframe animations */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Improved calendar styling */
+.calendar-container {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.calendar-container table {
+  border-spacing: 8px;
+  border-collapse: separate;
+}
+
+.calendar-container th {
+  font-weight: 500;
+  color: #86868b;
+  padding: 8px 0;
+  font-size: 0.9rem;
+}
+
+.calendar-container td {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Calendar day types with Apple-like colors */
+.day1 {
+  background: #e4f3ff !important;
+  color: #007AFF !important;
+}
+
+.day2 {
+  background: #e9e5ff !important;
+  color: #5856D6 !important;
+}
+
+.late-start {
+  background: #ffedf3 !important;
+  color: #FF2D55 !important;
+}
+
+.holiday {
+  background: #ffe9e5 !important;
+  color: #FF3B30 !important;
+}
+
+.weekend {
+  background: #f5f5f7 !important;
+  color: #86868b !important;
+}
+
+/* Dark mode calendar styles */
+body.dark-mode .calendar-container {
+  background: rgba(28, 28, 30, 0.8);
+}
+
+body.dark-mode .calendar-container th {
+  color: #86868b;
+}
+
+body.dark-mode .calendar-container td {
+  background: rgba(44, 44, 46, 0.5);
+  color: #ffffff;
+}
+
+body.dark-mode .day1 {
+  background: rgba(0, 122, 255, 0.2) !important;
+  color: #0A84FF !important;
+}
+
+body.dark-mode .day2 {
+  background: rgba(88, 86, 214, 0.2) !important;
+  color: #5E5CE6 !important;
+}
+
+body.dark-mode .late-start {
+  background: rgba(255, 45, 85, 0.2) !important;
+  color: #FF375F !important;
+}
+
+body.dark-mode .holiday {
+  background: rgba(255, 59, 48, 0.2) !important;
+  color: #FF453A !important;
+}
+
+body.dark-mode .weekend {
+  background: rgba(142, 142, 147, 0.2) !important;
+  color: #98989D !important;
+}
+
+/* Enhanced typography */
+#day-indicator {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: #1c1c1e;
+}
+
+body.dark-mode #day-indicator {
+  color: #ffffff;
+}
+
+/* Improved spacing */
+#timetable {
+  padding-top: 32px; /* Reduced top padding */
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Remove hover effects from timetable items */
+#timetable-items div:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Calendar cell hover effect */
+.calendar-container td:not(.weekend):hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced navbar */
+.navbar {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+}
+
+.navbar a {
+  color: #1c1c1e;
+}
+
+body.dark-mode .navbar {
+  background: rgba(28, 28, 30, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .navbar a {
+  color: #ffffff;
+}
+
+/* Editable period styles */
+.period-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding-left: 40px;
+}
+
+.period-label {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  font-weight: 500;
+  color: #1c1c1e;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  margin-right: 2px;
+  min-width: 85px;
+  justify-content: flex-end;
+}
+
+.period-text {
+  flex: 0 1 auto;
+  min-width: 100px;
+  max-width: 300px;
+  padding: 4px 4px;
+  margin-left: 2px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: text;
+  color: #1c1c1e;
+  font-weight: 500;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .period-item {
+    padding-left: 20px;
+  }
+  
+  .period-label {
+    min-width: 75px;
+  }
+}
+
+/* Add this animation for the editing state */
+@keyframes textEditPulse {
+  0% { background-color: rgba(0, 122, 255, 0.1); }
+  50% { background-color: rgba(0, 122, 255, 0.2); }
+  100% { background-color: rgba(0, 122, 255, 0.1); }
+}
+
+.period-text:focus {
+  animation: textEditPulse 2s infinite;
+}
+
+/* Make the calendar title more compact */
+#timetable h2:last-of-type {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+  color: #86868b;
+}
+
+/* Adjust spacing for mobile */
+@media (max-width: 480px) {
+  #timetable {
+    padding: 16px 8px;
+    width: 100%;
+    padding-bottom: 80px;
+  }
+
+  #day-indicator {
+    font-size: 1.4rem;
+    margin-bottom: 24px;
+  }
+
+  .period-item {
+    padding: 10px 8px;
+  }
+
+  .period-label {
+    min-width: 70px;
+    font-size: 0.9rem;
+  }
+
+  .period-text {
+    font-size: 0.9rem;
+  }
+
+  .calendar-container {
+    padding: 12px 8px;
+    margin-top: 16px;
+    border-radius: 16px;
+  }
+
+  .calendar-container table {
+    border-spacing: 4px;
+  }
+
+  .calendar-container th {
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+
+  .calendar-container td {
+    height: 44px;
+    font-size: 0.8rem;
+    padding: 2px;
+  }
+
+  .calendar-container td br {
+    display: none;
+  }
+
+  .calendar-container td::after {
+    content: attr(data-day-type);
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 2px;
+  }
+
+  .navbar {
+    padding: 4px 0;
+  }
+
+  .navbar a {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 3px;
+  }
+
+  #settings {
+    padding: 16px 8px;
+  }
+
+  #period-settings input {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .switch {
+    width: 50px;
+    height: 28px;
+  }
+
+  .slider:before {
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+}
+
+/* Additional adjustments for very small devices */
+@media (max-width: 320px) {
+  #day-indicator {
+    font-size: 1.2rem;
+  }
+
+  .period-label {
+    min-width: 60px;
+    font-size: 0.85rem;
+  }
+
+  .calendar-container td {
+    height: 40px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 480px) and (orientation: landscape) {
+  #timetable {
+    padding-top: 8px;
+  }
+
+  #day-indicator {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
+  .period-item {
+    padding: 6px 8px;
+  }
+
+  .calendar-container {
+    max-height: calc(100vh - 300px);
+  }
+}
+
+/* Fix for iOS Safari bottom bar */
+@supports (-webkit-touch-callout: none) {
+  .section {
+    padding-bottom: 100px;
+  }
+
+  .navbar {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Container for sections */
+.sections-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 50px);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 16px;
+}
+
+/* Dark mode styles for periods */
+body.dark-mode .period-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .period-label {
+  color: #ffffff;
+}
+
+body.dark-mode .period-text {
+  color: #ffffff;
+}
+
+body.dark-mode .period-text:empty::before {
+  color: #98989d;
+}
+
+body.dark-mode .period-text:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .period-text:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Update the pulse animation for dark mode */
+@media (prefers-color-scheme: dark) {
+  @keyframes textEditPulse {
+    0% { background-color: rgba(255, 255, 255, 0.1); }
+    50% { background-color: rgba(255, 255, 255, 0.15); }
+    100% { background-color: rgba(255, 255, 255, 0.1); }
+  }
 }
