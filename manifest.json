@@ -1,7 +1,51 @@
 {
-  "name": "CoolConnects",
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "short_name": "coolconnect",
-  "description": "Cool Connects is an intuitive and customizable timetable app designed to simplify your daily school routine. Whether it's a regular school day, a late start, or a PA day, Cool Connects ensures you stay on top of your schedule with ease. Key features include:\n\nDynamic Timetable Management: Automatically adjusts your schedule based on Day 1/Day 2 cycles, skipping PA days and weekends.\nCalendar Integration: A sleek calendar view highlights important dates like PA days, holidays, and late starts for quick reference.\nDark Mode: Switch between light and dark themes for a personalized and eye-friendly experience.\nCustomizable Periods: Tailor the app to your unique schedule by naming your periods and saving them for easy access.\nSmart Data Persistence: Your timetable and settings are stored locally, ensuring you never lose your data, even after refreshing the app.\nCool Connects combines functionality and simplicity, making it the perfect alternative to traditional scheduling tools. Empower your school day with a timetable that works for you!"
+  "name": "Timetable App",
+  "short_name": "Timetable",
+  "description": "A simple and elegant timetable management app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
