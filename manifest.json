@@ -1,0 +1,7 @@
+{
+  "name": "CoolConnects",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "short_name": "coolconnect",
+  "description": "Cool Connects is an intuitive and customizable timetable app designed to simplify your daily school routine. Whether it's a regular school day, a late start, or a PA day, Cool Connects ensures you stay on top of your schedule with ease. Key features include:\n\nDynamic Timetable Management: Automatically adjusts your schedule based on Day 1/Day 2 cycles, skipping PA days and weekends.\nCalendar Integration: A sleek calendar view highlights important dates like PA days, holidays, and late starts for quick reference.\nDark Mode: Switch between light and dark themes for a personalized and eye-friendly experience.\nCustomizable Periods: Tailor the app to your unique schedule by naming your periods and saving them for easy access.\nSmart Data Persistence: Your timetable and settings are stored locally, ensuring you never lose your data, even after refreshing the app.\nCool Connects combines functionality and simplicity, making it the perfect alternative to traditional scheduling tools. Empower your school day with a timetable that works for you!"
+}
