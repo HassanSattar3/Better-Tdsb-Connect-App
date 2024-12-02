@@ -1276,3 +1276,54 @@ body.dark-mode .period-text:focus {
     100% { background-color: rgba(255, 255, 255, 0.1); }
   }
 }
+
+/* Add these styles after the existing mobile media queries */
+
+/* Enable smooth scrolling behavior */
+.section {
+  -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
+  overflow-y: auto; /* Allow vertical scrolling */
+  touch-action: pan-y; /* Enable vertical touch scrolling */
+}
+
+/* Specifically for the timetable section */
+#timetable {
+  height: calc(100vh - 60px); /* Account for navbar height */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-bottom: 80px; /* Add padding to prevent content from being hidden behind navbar */
+}
+
+/* Prevent horizontal scrolling */
+.sections-container {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure content is scrollable on iOS */
+@supports (-webkit-touch-callout: none) {
+  #timetable {
+    height: -webkit-fill-available;
+  }
+  
+  .section {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Prevent pull-to-refresh on mobile browsers */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Improve touch targets for mobile */
+.period-item, .calendar-container td {
+  min-height: 44px; /* Minimum touch target size */
+}
+
+/* Add momentum scrolling to calendar container */
+.calendar-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
