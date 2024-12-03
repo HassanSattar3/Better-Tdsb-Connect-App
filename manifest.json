@@ -1,6 +1,6 @@
 {
   "name": "Dayly",
-  "short_name": "dayly",
+  "short_name": "Dayly",
   "start_url": "/Better-Tdsb-Connect-App/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
+      "src": "/Better-Tdsb-Connect-App/icons.png",
       "sizes": "192x192",
       "type": "image/png"
     },
