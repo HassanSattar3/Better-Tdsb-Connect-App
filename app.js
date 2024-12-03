@@ -101,25 +101,58 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Add input event listener for content changes
+    // Update the input event handler
     periodText.addEventListener('input', function() {
-      // Trim whitespace
-      this.textContent = this.textContent.trim();
+      // Only adjust width when not focused (single line mode)
+      if (document.activeElement !== this) {
+        const minWidth = 100;
+        const maxWidth = 300;
+        
+        // Create temporary element to measure text width
+        const temp = document.createElement('div');
+        temp.style.position = 'absolute';
+        temp.style.visibility = 'hidden';
+        temp.style.whiteSpace = 'nowrap'; // Use nowrap for width calculation
+        temp.style.fontSize = window.getComputedStyle(this).fontSize;
+        temp.style.fontFamily = window.getComputedStyle(this).fontFamily;
+        temp.style.padding = window.getComputedStyle(this).padding;
+        temp.textContent = this.textContent;
+        document.body.appendChild(temp);
+        
+        // Calculate and set width
+        const width = Math.min(Math.max(temp.offsetWidth, minWidth), maxWidth);
+        this.style.width = `${width}px`;
+        
+        document.body.removeChild(temp);
+      }
+    });
+
+    // Add focus and blur handlers
+    periodText.addEventListener('focus', function() {
+      this.style.width = '300px'; // Expand to max width when editing
+    });
+
+    periodText.addEventListener('blur', function() {
+      // Reset to single line mode
+      const minWidth = 100;
+      const maxWidth = 300;
       
-      // Calculate content width
-      const tempSpan = document.createElement('span');
-      tempSpan.style.visibility = 'hidden';
-      tempSpan.style.position = 'absolute';
-      tempSpan.style.fontSize = window.getComputedStyle(this).fontSize;
-      tempSpan.style.fontFamily = window.getComputedStyle(this).fontFamily;
-      tempSpan.textContent = this.textContent;
-      document.body.appendChild(tempSpan);
+      // Measure the collapsed text width
+      const temp = document.createElement('div');
+      temp.style.position = 'absolute';
+      temp.style.visibility = 'hidden';
+      temp.style.whiteSpace = 'nowrap';
+      temp.style.fontSize = window.getComputedStyle(this).fontSize;
+      temp.style.fontFamily = window.getComputedStyle(this).fontFamily;
+      temp.style.padding = window.getComputedStyle(this).padding;
+      temp.textContent = this.textContent.trim();
+      document.body.appendChild(temp);
       
-      // Set width based on content (plus padding)
-      const contentWidth = tempSpan.offsetWidth;
-      this.style.width = `${Math.min(Math.max(contentWidth + 16, 100), 300)}px`;
+      // Calculate and set width
+      const width = Math.min(Math.max(temp.offsetWidth, minWidth), maxWidth);
+      this.style.width = `${width}px`;
       
-      document.body.removeChild(tempSpan);
+      document.body.removeChild(temp);
     });
   });
 });
@@ -132,10 +165,22 @@ function formatDate(date) {
 }
 
 function formatMonthDay(date) {
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const shortMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const month = date.getMonth();
   const day = date.getDate();
-  return day === 1 ? `${monthNames[month]}` : `${monthNames[month]} ${day}`;
+  
+  // Add ordinal suffix to day (1st, 2nd, 3rd, etc.)
+  const ordinalSuffix = (day) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
+  return `${shortMonthNames[month]} ${day}${ordinalSuffix(day)}`;
 }
 
 function getHolidays() {
@@ -187,41 +232,64 @@ function getDayType(date) {
 }
 
 function displayDayType(date, isToday = true, isLateStart = false) {
+  const dayIndicator = document.getElementById("day-indicator");
   const dayType = isHoliday(date) ? 'Holiday' : getDayType(date);
   const displayDate = new Date(date);
-  displayDate.setDate(displayDate.getDate() + 1); // Add one day
+  displayDate.setDate(displayDate.getDate() + 1);
   const formattedDisplayDate = formatMonthDay(displayDate);
   const lateStartText = isLateStart ? " (Late Start)" : "";
 
+  // Set initial content
   if (isToday) {
-    document.getElementById("day-indicator").textContent = `Today is ${dayType}${lateStartText}`;
+    dayIndicator.textContent = `Today - ${dayType}${lateStartText}`;
   } else {
-    document.getElementById("day-indicator").textContent = `${formattedDisplayDate} is ${dayType}${lateStartText}`;
+    dayIndicator.textContent = `${formattedDisplayDate} - ${dayType}${lateStartText}`;
   }
+
+  // Trigger fade animation
+  dayIndicator.style.opacity = '0';
+  dayIndicator.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+  
+  // Force reflow
+  void dayIndicator.offsetWidth;
+  
+  // Fade in
+  dayIndicator.style.opacity = '1';
 }
 
 function loadTimetable(date) {
   const timetable = JSON.parse(localStorage.getItem('timetable')) || {};
   const dayType = getDayType(date);
+  const timetableItems = document.getElementById('timetable-items');
   
-  document.querySelectorAll('.period-text').forEach((periodText, index) => {
-    const periodNumber = index + 1;
-    let periodContent = timetable[`period${periodNumber}`] || '';
-    
-    if (dayType === 'Day 2' && (periodNumber === 3 || periodNumber === 4)) {
-      const swappedNumber = periodNumber === 3 ? 4 : 3;
-      periodContent = timetable[`period${swappedNumber}`] || '';
-    }
-    
-    periodText.textContent = periodContent;
-    
-    // Trigger input event to resize after setting content
-    const inputEvent = new Event('input', {
-      bubbles: true,
-      cancelable: true,
+  // Fade out
+  timetableItems.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+  timetableItems.style.opacity = '0';
+  
+  // Update content after fade out
+  setTimeout(() => {
+    document.querySelectorAll('.period-text').forEach((periodText, index) => {
+      const periodNumber = index + 1;
+      let periodContent = timetable[`period${periodNumber}`] || '';
+      
+      if (dayType === 'Day 2' && (periodNumber === 3 || periodNumber === 4)) {
+        const swappedNumber = periodNumber === 3 ? 4 : 3;
+        periodContent = timetable[`period${swappedNumber}`] || '';
+      }
+      
+      periodText.textContent = periodContent;
+      
+      // Trigger input event to resize after setting content
+      const inputEvent = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+      periodText.dispatchEvent(inputEvent);
     });
-    periodText.dispatchEvent(inputEvent);
-  });
+    
+    // Fade in
+    timetableItems.style.opacity = '1';
+  }, 400);
 }
 
 function generateCalendar() {
