@@ -628,12 +628,12 @@ body.dark-mode .late-start:hover {
 
 /* Dark mode hover states for day1 cells */
 body.dark-mode .calendar-container td.day1:hover {
-  background-color: #2c3a42 !important; /* Darker shade for day1 hover */
+  background-color: #1c5480 !important; /* Darker, more visible shade for day1 hover */
 }
 
 /* Dark mode hover states for day2 cells */
 body.dark-mode .calendar-container td.day2:hover {
-  background-color: #546e7a !important; /* Darker shade for day2 hover */
+  background-color: #3f4c8c !important; /* Darker, more visible shade for day2 hover */
 }
 
 /* Dark mode hover states for holiday cells */
@@ -929,13 +929,13 @@ body.dark-mode .calendar-container td {
 }
 
 body.dark-mode .day1 {
-  background: rgba(0, 122, 255, 0.2) !important;
-  color: #0A84FF !important;
+  background: rgba(0, 122, 255, 0.3) !important; /* Slightly increased opacity */
+  color: #66b5ff !important; /* Brighter text color for better visibility */
 }
 
 body.dark-mode .day2 {
-  background: rgba(88, 86, 214, 0.2) !important;
-  color: #5E5CE6 !important;
+  background: rgba(88, 86, 214, 0.3) !important; /* Slightly increased opacity */
+  color: #8e8eff !important; /* Brighter text color for better visibility */
 }
 
 body.dark-mode .late-start {
@@ -1036,10 +1036,10 @@ body.dark-mode .navbar a {
 }
 
 .period-text {
-  flex: 0 1 auto;
+  flex: 1;
   min-width: 100px;
   max-width: 300px;
-  padding: 4px 4px;
+  padding: 4px 8px;
   margin-left: 2px;
   border-radius: 6px;
   transition: all 0.2s ease;
@@ -1050,6 +1050,10 @@ body.dark-mode .navbar a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  height: auto;
 }
 
 /* Mobile adjustments */
@@ -1406,4 +1410,11 @@ body, .calendar-container, .navbar, #timetable-items div {
     50% { background-color: rgba(255, 255, 255, 0.1); }
     100% { background-color: rgba(255, 255, 255, 0.05); }
   }
+}
+
+/* Add styles for when the period-text is being edited */
+.period-text:focus {
+  white-space: pre-wrap;
+  overflow: visible;
+  min-height: 1.5em; /* Add this to maintain consistent height */
 }
