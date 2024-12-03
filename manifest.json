@@ -1,7 +1,7 @@
 {
   "name": "Dayly",
   "short_name": "dayly",
-  "start_url": "https://hassansattar3.github.io/Better-Tdsb-Connect-App/",
+  "start_url": "/Better-Tdsb-Connect-App/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
