@@ -18,7 +18,7 @@
   <link rel="apple-touch-startup-image" href="splash/apple-splash-1170-2532.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
   <link rel="apple-touch-startup-image" href="splash/apple-splash-1125-2436.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
   
- <link rel="icon" href="favicon.png" type="image/png"> 
+ <link rel="icon" href="favicon.png" type="image/png">
 
   <title>Timetable App</title>
   <link rel="stylesheet" href="styles.css">
@@ -32,19 +32,19 @@
       <div id="timetable-items">
         <div class="period-item">
           <span class="period-label">Period 1:</span>
-          <span class="period-text" data-period="1" contenteditable="true"></span>
+          <span class="period-text" data-period="1"></span>
         </div>
         <div class="period-item">
           <span class="period-label">Period 2:</span>
-          <span class="period-text" data-period="2" contenteditable="true"></span>
+          <span class="period-text" data-period="2"></span>
         </div>
         <div class="period-item">
           <span class="period-label">Period 3:</span>
-          <span class="period-text" data-period="3" contenteditable="true"></span>
+          <span class="period-text" data-period="3"></span>
         </div>
         <div class="period-item">
           <span class="period-label">Period 4:</span>
-          <span class="period-text" data-period="4" contenteditable="true"></span>
+          <span class="period-text" data-period="4"></span>
         </div>
       </div>
       <h2>Calendar</h2>
@@ -60,6 +60,7 @@
           <span class="slider round"></span>
         </label>
         <span>Dark Mode</span>
+        <p class="settings-info">Enter the periods as if it were day 1!</p>
       </div>
       <div id="period-settings">
         <label for="period1">Period 1</label>
@@ -74,7 +75,6 @@
         <label for="period4">Period 4</label>
         <input type="text" id="period4" placeholder="Enter Period 4 Task">
       </div>
-      <button id="save-settings-btn" class="primary-btn">Save Settings</button>
     </section>
   </div>
 

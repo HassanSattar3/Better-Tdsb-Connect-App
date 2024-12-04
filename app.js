@@ -11,6 +11,11 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Check if it's the first time loading the app
+  if (!localStorage.getItem('hasVisitedBefore')) {
+    showFirstTimeSetup();
+  }
+  
   // Hide all sections first
   document.querySelectorAll('.section').forEach(section => {
     section.style.display = 'none';
@@ -25,10 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Navigation Links
   const navLinks = document.querySelectorAll(".navbar a");
   navLinks.forEach(link => {
-    link.addEventListener("click", function () {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
       const target = document.querySelector(this.getAttribute("href"));
-      document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+      
+      // Remove active class from all sections and links
+      document.querySelectorAll(".section").forEach(section => {
+        section.style.display = "none";
+        section.classList.remove("active");
+      });
+      navLinks.forEach(navLink => navLink.classList.remove("active"));
+      
+      // Add active class to clicked link and target section
+      this.classList.add("active");
       target.style.display = "flex";
+      target.classList.add("active");
+      
+      // Update URL hash without scrolling
+      history.pushState(null, null, this.getAttribute("href"));
     });
   });
 
@@ -39,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   generateCalendar();
 
   const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const saveSettingsBtn = document.getElementById("save-settings-btn");
 
   darkModeToggle.addEventListener("change", () => {
     if (darkModeToggle.checked) {
@@ -52,23 +70,22 @@ document.addEventListener("DOMContentLoaded", () => {
     generateCalendar(); // Regenerate the calendar to apply the correct styles
   });
 
-
-  saveSettingsBtn.addEventListener("click", () => {
-    const period1 = document.getElementById("period1").value;
-    const period2 = document.getElementById("period2").value;
-    const period3 = document.getElementById("period3").value;
-    const period4 = document.getElementById("period4").value;
-
-    const timetable = {
-      period1: period1,
-      period2: period2,
-      period3: period3,
-      period4: period4,
-    };
-
-    localStorage.setItem("timetable", JSON.stringify(timetable));
-    loadTimetableForToday(formattedToday, isLateStart); // Reload timetable for today
-    alert("Settings saved successfully!"); // Show a success message
+  // Add auto-save functionality to period inputs
+  const periodInputs = ['period1', 'period2', 'period3', 'period4'];
+  periodInputs.forEach(periodId => {
+    const input = document.getElementById(periodId);
+    if (input) {
+      input.addEventListener('blur', () => {
+        const timetable = {
+          period1: document.getElementById('period1').value,
+          period2: document.getElementById('period2').value,
+          period3: document.getElementById('period3').value,
+          period4: document.getElementById('period4').value,
+        };
+        localStorage.setItem("timetable", JSON.stringify(timetable));
+        loadTimetableForToday(formattedToday, isLateStart); // Reload timetable for today
+      });
+    }
   });
 
   if (localStorage.getItem("darkMode") === "enabled") {
@@ -76,83 +93,35 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("dark-mode");
   }
 
-  // Setup period editing
-  const periodTexts = document.querySelectorAll('.period-text');
-  
-  periodTexts.forEach(periodText => {
-    // Load saved period text
-    const periodNumber = periodText.dataset.period;
-    const savedTimetable = JSON.parse(localStorage.getItem('timetable')) || {};
-    periodText.textContent = savedTimetable[`period${periodNumber}`] || '';
-
-    // Save on blur
-    periodText.addEventListener('blur', () => {
-      const timetable = JSON.parse(localStorage.getItem('timetable')) || {};
-      timetable[`period${periodNumber}`] = periodText.textContent.trim();
-      localStorage.setItem('timetable', JSON.stringify(timetable));
-      loadTimetableForToday(formatDate(new Date()), checkIfLateStart(new Date()));
-    });
-
-    // Handle Enter key
-    periodText.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        periodText.blur();
+  // Set initial active state based on URL hash or default to timetable
+  const setInitialActiveState = () => {
+    const hash = window.location.hash || "#timetable";
+    const activeLink = document.querySelector(`.navbar a[href="${hash}"]`);
+    if (activeLink) {
+      activeLink.classList.add("active");
+      const target = document.querySelector(hash);
+      if (target) {
+        target.style.display = "flex";
+        target.classList.add("active");
       }
-    });
+    }
+  };
+  setInitialActiveState();
 
-    // Update the input event handler
-    periodText.addEventListener('input', function() {
-      // Only adjust width when not focused (single line mode)
-      if (document.activeElement !== this) {
-        const minWidth = 100;
-        const maxWidth = 300;
-        
-        // Create temporary element to measure text width
-        const temp = document.createElement('div');
-        temp.style.position = 'absolute';
-        temp.style.visibility = 'hidden';
-        temp.style.whiteSpace = 'nowrap'; // Use nowrap for width calculation
-        temp.style.fontSize = window.getComputedStyle(this).fontSize;
-        temp.style.fontFamily = window.getComputedStyle(this).fontFamily;
-        temp.style.padding = window.getComputedStyle(this).padding;
-        temp.textContent = this.textContent;
-        document.body.appendChild(temp);
-        
-        // Calculate and set width
-        const width = Math.min(Math.max(temp.offsetWidth, minWidth), maxWidth);
-        this.style.width = `${width}px`;
-        
-        document.body.removeChild(temp);
-      }
-    });
+  // Add click handlers for period items
+  const periodItems = document.querySelectorAll('.period-item');
+  periodItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // Add the clicked class for animation
+      item.classList.add('clicked');
+      
+      // Remove the clicked class after animation completes
+      setTimeout(() => {
+        item.classList.remove('clicked');
+      }, 400);
 
-    // Add focus and blur handlers
-    periodText.addEventListener('focus', function() {
-      this.style.width = '300px'; // Expand to max width when editing
-    });
-
-    periodText.addEventListener('blur', function() {
-      // Reset to single line mode
-      const minWidth = 100;
-      const maxWidth = 300;
-      
-      // Measure the collapsed text width
-      const temp = document.createElement('div');
-      temp.style.position = 'absolute';
-      temp.style.visibility = 'hidden';
-      temp.style.whiteSpace = 'nowrap';
-      temp.style.fontSize = window.getComputedStyle(this).fontSize;
-      temp.style.fontFamily = window.getComputedStyle(this).fontFamily;
-      temp.style.padding = window.getComputedStyle(this).padding;
-      temp.textContent = this.textContent.trim();
-      document.body.appendChild(temp);
-      
-      // Calculate and set width
-      const width = Math.min(Math.max(temp.offsetWidth, minWidth), maxWidth);
-      this.style.width = `${width}px`;
-      
-      document.body.removeChild(temp);
+      // Show the notification
+      showNotification('You can edit periods in Settings! 👉');
     });
   });
 });
@@ -465,3 +434,332 @@ navLinks.forEach(link => {
     }
   });
 });
+
+function showFirstTimeSetup() {
+  const popup = document.createElement('div');
+  popup.innerHTML = `
+    <div id="setup-overlay" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 16px;
+    ">
+      <div style="
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 24px 20px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        margin: auto;
+        -webkit-tap-highlight-color: transparent;
+      ">
+        <h2 style="
+          text-align: center;
+          margin-top: 0;
+          color: #1c1c1e;
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 20px;
+          letter-spacing: -0.5px;
+          padding: 0 10px;
+        ">Write these class periods for Day 1!!!</h2>
+        <div style="margin-bottom: 16px;">
+          <label style="
+            display: block;
+            margin-bottom: 8px;
+            color: #1c1c1e;
+            font-weight: 500;
+            font-size: 1rem;
+            padding-left: 4px;
+          ">Period 1:</label>
+          <input type="text" id="setup-period1" placeholder="Enter Period 1" style="
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+            -webkit-appearance: none;
+            appearance: none;
+          ">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="
+            display: block;
+            margin-bottom: 8px;
+            color: #1c1c1e;
+            font-weight: 500;
+            font-size: 1rem;
+            padding-left: 4px;
+          ">Period 2:</label>
+          <input type="text" id="setup-period2" placeholder="Enter Period 2" style="
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+            -webkit-appearance: none;
+            appearance: none;
+          ">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="
+            display: block;
+            margin-bottom: 8px;
+            color: #1c1c1e;
+            font-weight: 500;
+            font-size: 1rem;
+            padding-left: 4px;
+          ">Period 3:</label>
+          <input type="text" id="setup-period3" placeholder="Enter Period 3" style="
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+            -webkit-appearance: none;
+            appearance: none;
+          ">
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="
+            display: block;
+            margin-bottom: 8px;
+            color: #1c1c1e;
+            font-weight: 500;
+            font-size: 1rem;
+            padding-left: 4px;
+          ">Period 4:</label>
+          <input type="text" id="setup-period4" placeholder="Enter Period 4" style="
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+            -webkit-appearance: none;
+            appearance: none;
+          ">
+        </div>
+        <div style="
+          text-align: center;
+          color: #86868b;
+          font-size: 0.9rem;
+          margin-top: 16px;
+          font-weight: 500;
+          padding: 8px;
+        ">Press Enter or click outside to save</div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  // Prevent body scrolling when popup is open
+  document.body.style.overflow = 'hidden';
+
+  // Trigger entrance animation
+  requestAnimationFrame(() => {
+    const overlay = document.getElementById('setup-overlay');
+    const dialog = overlay.querySelector('div');
+    overlay.style.opacity = '1';
+    dialog.style.transform = 'scale(1)';
+    dialog.style.opacity = '1';
+  });
+
+  // Handle dark mode
+  if (document.body.classList.contains('dark-mode')) {
+    const setupDialog = popup.querySelector('div > div');
+    setupDialog.style.background = 'rgba(28, 28, 30, 0.9)';
+    setupDialog.querySelectorAll('h2, label').forEach(el => el.style.color = '#ffffff');
+    setupDialog.querySelectorAll('input').forEach(input => {
+      input.style.background = 'rgba(44, 44, 46, 0.8)';
+      input.style.color = '#ffffff';
+      input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      
+      // Add active state for touch devices
+      input.addEventListener('touchstart', () => {
+        input.style.transform = 'scale(0.98)';
+      });
+      
+      input.addEventListener('touchend', () => {
+        input.style.transform = 'scale(1)';
+      });
+      
+      // Add focus styles
+      input.addEventListener('focus', () => {
+        input.style.borderColor = '#0A84FF';
+        input.style.boxShadow = '0 0 0 3px rgba(10, 132, 255, 0.3)';
+      });
+      
+      input.addEventListener('blur', () => {
+        input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        input.style.boxShadow = 'none';
+      });
+    });
+    setupDialog.querySelector('div[style*="color: #86868b"]').style.color = '#98989d';
+  } else {
+    // Add focus styles for light mode
+    popup.querySelectorAll('input').forEach(input => {
+      // Add active state for touch devices
+      input.addEventListener('touchstart', () => {
+        input.style.transform = 'scale(0.98)';
+      });
+      
+      input.addEventListener('touchend', () => {
+        input.style.transform = 'scale(1)';
+      });
+      
+      input.addEventListener('focus', () => {
+        input.style.borderColor = '#007AFF';
+        input.style.boxShadow = '0 0 0 3px rgba(0, 122, 255, 0.2)';
+      });
+      
+      input.addEventListener('blur', () => {
+        input.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+        input.style.boxShadow = 'none';
+      });
+    });
+  }
+
+  let allFieldsFilled = false;
+  const inputs = [
+    document.getElementById('setup-period1'),
+    document.getElementById('setup-period2'),
+    document.getElementById('setup-period3'),
+    document.getElementById('setup-period4')
+  ];
+
+  function checkAllFieldsAndSave() {
+    const allFilled = inputs.every(input => input.value.trim() !== '');
+    
+    if (allFilled && !allFieldsFilled) {
+      // Wait 2 seconds after the last input before closing
+      setTimeout(() => {
+        allFieldsFilled = true;
+        const timetable = {
+          period1: inputs[0].value,
+          period2: inputs[1].value,
+          period3: inputs[2].value,
+          period4: inputs[3].value,
+        };
+
+        localStorage.setItem('timetable', JSON.stringify(timetable));
+        localStorage.setItem('hasVisitedBefore', 'true');
+        
+        // Enhanced fade out animation
+        const overlay = document.getElementById('setup-overlay');
+        const dialog = overlay.querySelector('div');
+        overlay.style.opacity = '0';
+        dialog.style.transform = 'scale(0.95)';
+        dialog.style.opacity = '0';
+        
+        setTimeout(() => {
+          popup.remove();
+          document.body.style.overflow = ''; // Restore body scrolling
+          
+          const today = new Date();
+          const formattedToday = formatDate(today);
+          const isLateStart = checkIfLateStart(today);
+          loadTimetableForToday(formattedToday, isLateStart);
+        }, 300);
+      }, 2000); // Wait 2 seconds before closing
+    }
+  }
+
+  // Add event listeners for each input
+  inputs.forEach((input, index) => {
+    // Save on blur (clicking outside)
+    input.addEventListener('blur', () => {
+      // Only trigger save on blur if it's the last input
+      if (index === inputs.length - 1) {
+        checkAllFieldsAndSave();
+      }
+    });
+    
+    // Handle Enter key and mobile keyboard "done"
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        } else {
+          input.blur();
+        }
+      }
+    });
+    
+    // Auto-save as user types with delay
+    let timeout;
+    input.addEventListener('input', () => {
+      clearTimeout(timeout);
+      // Only start the auto-save timeout for the last input
+      if (index === inputs.length - 1) {
+        timeout = setTimeout(checkAllFieldsAndSave, 2000);
+      }
+    });
+  });
+}
+
+// Add this function after your existing code
+function showNotification(message, duration = 3000) {
+  // Remove any existing notification
+  const existingNotification = document.querySelector('.notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Create and add the new notification
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  // Trigger the animation
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 100);
+
+  // Remove the notification after duration
+  setTimeout(() => {
+    notification.style.top = '-100px';
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  }, duration);
+}
