@@ -124,6 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
       showNotification('You can edit periods in Settings! 👉');
     });
   });
+
+  // Todo functionality
+  initializeTodos();
 });
 
 function formatDate(date) {
@@ -762,4 +765,154 @@ function showNotification(message, duration = 3000) {
       notification.remove();
     }, 300);
   }, duration);
+}
+
+// Todo functionality
+function initializeTodos() {
+  const addTodoButton = document.getElementById('add-todo');
+  const todoText = document.getElementById('todo-text');
+  const todoDate = document.getElementById('todo-date');
+  const todoPeriod = document.getElementById('todo-period');
+  const todoList = document.getElementById('todo-list');
+
+  // Set default date to today
+  const today = new Date();
+  todoDate.value = formatDate(today);
+
+  addTodoButton.addEventListener('click', () => {
+    if (!todoText.value) return;
+
+    const todo = {
+      id: Date.now(),
+      text: todoText.value,
+      date: todoDate.value,
+      period: todoPeriod.value,
+      completed: false
+    };
+
+    const todos = getTodos();
+    todos.push(todo);
+    saveTodos(todos);
+    
+    todoText.value = '';
+    todoPeriod.value = '';
+    
+    displayTodos();
+    updatePeriodTodoDropdowns();
+  });
+
+  // Initial display
+  displayTodos();
+  updatePeriodTodoDropdowns();
+}
+
+function getTodos() {
+  return JSON.parse(localStorage.getItem('todos') || '[]');
+}
+
+function saveTodos(todos) {
+  localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+function getTodoStatus(dueDate) {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const due = new Date(dueDate);
+
+  // Reset time components for accurate date comparison
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+
+  if (due < today) return 'overdue';
+  if (due.getTime() === today.getTime()) return 'due-today';
+  if (due.getTime() === tomorrow.getTime()) return 'due-tomorrow';
+  return 'due-later';
+}
+
+function displayTodos() {
+  const todoList = document.getElementById('todo-list');
+  const todos = getTodos();
+
+  todoList.innerHTML = '';
+  todos.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  todos.forEach(todo => {
+    const status = getTodoStatus(todo.date);
+    const todoItem = document.createElement('div');
+    todoItem.className = `todo-item ${status} ${todo.completed ? 'completed' : ''}`;
+    
+    todoItem.innerHTML = `
+      <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+      <div class="todo-content">
+        <p class="todo-text">${todo.text}</p>
+        <span class="todo-date">${formatMonthDay(new Date(todo.date))}${todo.period ? ` - ${todo.period}` : ''}</span>
+      </div>
+      <button class="delete-todo" onclick="deleteTodo(${todo.id})">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    `;
+
+    todoList.appendChild(todoItem);
+  });
+}
+
+function updatePeriodTodoDropdowns() {
+  const todos = getTodos();
+  const periodItems = document.querySelectorAll('.period-item');
+
+  periodItems.forEach((item, index) => {
+    const periodNumber = index + 1;
+    const dropdown = item.querySelector('.todo-dropdown');
+    const periodTodos = todos.filter(todo => 
+      todo.period === `period${periodNumber}` && !todo.completed
+    );
+
+    if (periodTodos.length > 0) {
+      item.classList.add('has-todos');
+      dropdown.innerHTML = periodTodos.map(todo => {
+        const status = getTodoStatus(todo.date);
+        return `
+          <div class="todo-mini-item ${status}">
+            <span>${todo.text}</span>
+            <small>${formatMonthDay(new Date(todo.date))}</small>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handler for the period item
+      item.onclick = (e) => {
+        // Don't toggle if clicking on a todo item
+        if (e.target.closest('.todo-mini-item')) return;
+        
+        // Toggle the dropdown
+        item.classList.toggle('dropdown-open');
+      };
+    } else {
+      item.classList.remove('has-todos', 'dropdown-open');
+      dropdown.innerHTML = '';
+      item.onclick = null;
+    }
+  });
+}
+
+function toggleTodo(id) {
+  const todos = getTodos();
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    todo.completed = !todo.completed;
+    saveTodos(todos);
+    displayTodos();
+    updatePeriodTodoDropdowns();
+  }
+}
+
+function deleteTodo(id) {
+  const todos = getTodos().filter(t => t.id !== id);
+  saveTodos(todos);
+  displayTodos();
+  updatePeriodTodoDropdowns();
 }

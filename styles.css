@@ -1050,465 +1050,575 @@ body.dark-mode .navbar a {
 
 /* Editable period styles */
 .period-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding-left: 40px;
-}
-
-.period-label {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex: 0 0 auto;
-  font-weight: 500;
-  color: #1c1c1e;
-  font-size: 1.1rem;
-  white-space: nowrap;
-  margin-right: 0;
-  min-width: 85px;
-  justify-content: flex-end;
-}
-
-.period-text {
-  flex: 1;
-  min-width: 100px;
-  max-width: 300px;
-  padding: 4px 0 4px 2px;
-  margin-left: 0;
-  border-radius: 6px;
+  position: relative;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  margin-bottom: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
-  color: #1c1c1e;
-  font-weight: 500;
-  font-size: 1.1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  vertical-align: middle;
-  line-height: normal;
-  height: auto;
-  pointer-events: none;
-  background: transparent !important;
+  border: 1px solid var(--border-color);
 }
 
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .period-item {
-    padding-left: 20px;
-  }
-  
-  .period-label {
-    min-width: 75px;
-  }
+.period-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Add this animation for the editing state */
-@keyframes textEditPulse {
-  0% { background-color: rgba(0, 122, 255, 0.05); }
-  50% { background-color: rgba(0, 122, 255, 0.1); }
-  100% { background-color: rgba(0, 122, 255, 0.05); }
-}
-
-.period-text:focus {
-  animation: textEditPulse 2s infinite;
-}
-
-/* Make the calendar title more compact */
-#timetable h2:last-of-type {
-  margin-top: 0;
-  margin-bottom: 8px;
-  font-size: 1.3rem;
-  color: #86868b;
-}
-
-/* Adjust spacing for mobile */
-@media (max-width: 480px) {
-  #timetable {
-    padding: 16px 8px;
-    width: 100%;
-    padding-bottom: 80px;
-  }
-
-  #day-indicator {
-    font-size: 1.4rem;
-    margin-bottom: 24px;
-  }
-
-  .period-item {
-    padding: 10px 8px;
-  }
-
-  .period-label {
-    min-width: 70px;
-    font-size: 0.9rem;
-  }
-
-  .period-text {
-    font-size: 0.9rem;
-  }
-
-  .calendar-container {
-    padding: 12px 8px;
-    margin-top: 16px;
-    border-radius: 16px;
-  }
-
-  .calendar-container table {
-    border-spacing: 4px;
-  }
-
-  .calendar-container th {
-    font-size: 0.8rem;
-    padding: 4px 0;
-  }
-
-  .calendar-container td {
-    height: 44px;
-    font-size: 0.8rem;
-    padding: 2px;
-  }
-
-  .calendar-container td br {
-    display: none;
-  }
-
-  .calendar-container td::after {
-    content: attr(data-day-type);
-    display: block;
-    font-size: 0.7rem;
-    margin-top: 2px;
-  }
-
-  .navbar {
-    padding: 4px 0;
-  }
-
-  .navbar a {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-  }
-
-  .nav-icon {
-    width: 20px;
-    height: 20px;
-    margin-bottom: 3px;
-  }
-
-  #settings {
-    padding: 16px 8px;
-  }
-
-  #period-settings input {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
-  .switch {
-    width: 50px;
-    height: 28px;
-  }
-
-  .slider:before {
-    height: 22px;
-    width: 22px;
-    left: 3px;
-    bottom: 3px;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(22px);
-  }
-}
-
-/* Additional adjustments for very small devices */
-@media (max-width: 320px) {
-  #day-indicator {
-    font-size: 1.2rem;
-  }
-
-  .period-label {
-    min-width: 60px;
-    font-size: 0.85rem;
-  }
-
-  .calendar-container td {
-    height: 40px;
-    font-size: 0.75rem;
-  }
-}
-
-/* Landscape mode adjustments */
-@media (max-height: 480px) and (orientation: landscape) {
-  #timetable {
-    padding-top: 8px;
-  }
-
-  #day-indicator {
-    font-size: 1.2rem;
-    margin-bottom: 16px;
-  }
-
-  .period-item {
-    padding: 6px 8px;
-  }
-
-  .calendar-container {
-    max-height: calc(100vh - 300px);
-  }
-}
-
-/* Fix for iOS Safari bottom bar */
-@supports (-webkit-touch-callout: none) {
-  .section {
-    padding-bottom: 100px;
-  }
-
-  .navbar {
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  }
-}
-
-/* Container for sections */
-.sections-container {
-  position: relative;
-  width: 100%;
-  min-height: calc(100vh - 50px);
-  overflow: hidden;
+.period-item .period-header {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0 16px;
-  padding-bottom: 60px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 
-/* Dark mode styles for periods */
-body.dark-mode .period-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.period-item .period-label {
+  font-weight: 600;
+  color: var(--text-color);
+  min-width: 80px;
 }
 
-body.dark-mode .period-label {
-  color: #ffffff;
+.period-item .period-text {
+  color: var(--text-color);
+  font-weight: 500;
 }
 
-body.dark-mode .period-text {
-  color: #ffffff;
+.period-item .todo-dropdown {
+  margin-top: 12px;
+  padding: 8px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  display: none;
+  border-top: 1px solid var(--border-color);
+  overflow: hidden;
+  max-height: 0;
+  transition: all 0.3s ease;
+  opacity: 0;
 }
 
-body.dark-mode .period-text:empty::before {
-  color: #98989d;
+.period-item.has-todos::after {
+  content: '▼';
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: transform 0.3s ease;
 }
 
-body.dark-mode .period-text:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.period-item.has-todos:hover::after {
+  opacity: 0.8;
 }
 
-body.dark-mode .period-text:focus {
-  background-color: rgba(255, 255, 255, 0.15);
+.period-item.has-todos.dropdown-open::after {
+  transform: rotate(180deg);
 }
 
-/* Update the pulse animation for dark mode */
-@media (prefers-color-scheme: dark) {
-  @keyframes textEditPulse {
-    0% { background-color: rgba(255, 255, 255, 0.05); }
-    50% { background-color: rgba(255, 255, 255, 0.1); }
-    100% { background-color: rgba(255, 255, 255, 0.05); }
+.period-item.has-todos.dropdown-open .todo-dropdown {
+  display: block;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.todo-dropdown .todo-mini-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--card-bg);
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.todo-dropdown .todo-mini-item:last-child {
+  margin-bottom: 0;
+}
+
+.todo-dropdown .todo-mini-item span {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.todo-dropdown .todo-mini-item small {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
+
+.todo-dropdown .todo-mini-item.overdue { border-left-color: rgba(255, 68, 68, 0.8); background: rgba(255, 68, 68, 0.05); }
+.todo-dropdown .todo-mini-item.due-today { border-left-color: rgba(255, 136, 0, 0.8); background: rgba(255, 136, 0, 0.05); }
+.todo-dropdown .todo-mini-item.due-tomorrow { border-left-color: rgba(255, 204, 0, 0.8); background: rgba(255, 204, 0, 0.05); }
+.todo-dropdown .todo-mini-item.due-later { border-left-color: rgba(68, 204, 68, 0.8); background: rgba(68, 204, 68, 0.05); }
+
+/* Todo Form Styles */
+.todo-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 15px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+@media (min-width: 768px) {
+  .todo-form {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    align-items: start;
   }
 }
 
-/* Add these styles after the existing mobile media queries */
+.todo-form input,
+.todo-form select {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
 
-/* Enable smooth scrolling behavior */
+.todo-form input:focus,
+.todo-form select:focus {
+  border-color: #2196F3;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.todo-form button {
+  padding: 10px 20px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.todo-form button:hover {
+  background: #1976D2;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.todo-form button:active {
+  transform: translateY(0);
+}
+
+/* Todo List Styles */
+#todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  gap: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.todo-item:hover {
+  transform: translateX(5px);
+}
+
+.todo-item .checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.todo-item .checkbox.checked {
+  background: #2196F3;
+  border-color: #2196F3;
+}
+
+.todo-item .checkbox.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+}
+
+.todo-item .todo-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todo-item .todo-text {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.todo-item .todo-date {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.todo-item .delete-todo {
+  padding: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.todo-item .delete-todo:hover {
+  opacity: 1;
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+}
+
+/* Dark mode enhancements */
+body.dark-mode .todo-form,
+body.dark-mode .todo-item,
+body.dark-mode .period-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .todo-dropdown {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .todo-mini-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Light mode specific styles */
+body:not(.dark-mode) .todo-dropdown {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body:not(.dark-mode) .todo-mini-item {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Completed todo styling */
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.todo-item.completed {
+  opacity: 0.7;
+  background: var(--input-bg);
+}
+
+/* Section transitions */
 .section {
-  -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
-  overflow-y: auto; /* Allow vertical scrolling */
-  touch-action: pan-y; /* Enable vertical touch scrolling */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
 }
 
-/* Specifically for the timetable section */
-#timetable {
-  height: calc(100vh - 60px); /* Account for navbar height */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  padding-bottom: 80px; /* Add padding to prevent content from being hidden behind navbar */
+.section.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* Prevent horizontal scrolling */
+/* Mobile-first base styles */
+:root {
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.todo-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .todo-form {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    align-items: start;
+    position: relative;
+  }
+}
+
+.todo-form input,
+.todo-form select {
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px; /* Minimum touch target size */
+}
+
+.todo-form button {
+  padding: 12px 20px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Minimum touch target size */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Sections container */
 .sections-container {
-  overflow-x: hidden;
-  width: 100%;
+  padding-bottom: calc(60px + var(--safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Ensure content is scrollable on iOS */
-@supports (-webkit-touch-callout: none) {
-  #timetable {
-    height: -webkit-fill-available;
+/* Period items */
+.period-item {
+  position: relative;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  margin: 8px 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.period-item:active {
+  transform: scale(0.98);
+}
+
+.period-item .period-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding-right: 24px; /* Space for arrow */
+}
+
+.period-item .period-label {
+  font-weight: 600;
+  color: var(--text-color);
+  min-width: 75px;
+  font-size: 0.95rem;
+}
+
+.period-item .period-text {
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.period-item .todo-dropdown {
+  margin-top: 12px;
+  padding: 8px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  display: none;
+  border-top: 1px solid var(--border-color);
+  overflow: hidden;
+  max-height: 0;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.period-item.has-todos::after {
+  content: '▼';
+  position: absolute;
+  right: 16px;
+  top: 18px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  transition: transform 0.3s ease;
+}
+
+.period-item.has-todos.dropdown-open::after {
+  transform: rotate(180deg);
+}
+
+.period-item.has-todos.dropdown-open .todo-dropdown {
+  display: block;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.todo-dropdown .todo-mini-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: var(--card-bg);
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  min-height: 44px; /* Minimum touch target size */
+}
+
+.todo-dropdown .todo-mini-item:last-child {
+  margin-bottom: 0;
+}
+
+.todo-dropdown .todo-mini-item span {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.todo-dropdown .todo-mini-item small {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
+
+/* Todo List */
+#todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  gap: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  min-height: 44px; /* Minimum touch target size */
+}
+
+.todo-item .checkbox {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.todo-item .delete-todo {
+  width: 44px; /* Minimum touch target size */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Status colors with better contrast */
+.todo-dropdown .todo-mini-item.overdue { 
+  border-left-color: rgba(255, 68, 68, 0.9); 
+  background: rgba(255, 68, 68, 0.08);
+}
+.todo-dropdown .todo-mini-item.due-today { 
+  border-left-color: rgba(255, 136, 0, 0.9); 
+  background: rgba(255, 136, 0, 0.08);
+}
+.todo-dropdown .todo-mini-item.due-tomorrow { 
+  border-left-color: rgba(255, 204, 0, 0.9); 
+  background: rgba(255, 204, 0, 0.08);
+}
+.todo-dropdown .todo-mini-item.due-later { 
+  border-left-color: rgba(68, 204, 68, 0.9); 
+  background: rgba(68, 204, 68, 0.08);
+}
+
+/* PWA specific styles */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: none;
   }
   
-  .section {
+  .sections-container {
+    height: 100vh;
     height: -webkit-fill-available;
+    overflow-y: auto;
+  }
+  
+  #timetable {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .navbar {
+    padding-bottom: calc(8px + var(--safe-area-inset-bottom));
   }
 }
 
-/* Prevent pull-to-refresh on mobile browsers */
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .todo-dropdown .todo-mini-item {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .period-item, .todo-item {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Prevent pull-to-refresh on mobile */
 body {
   overscroll-behavior-y: contain;
 }
 
-/* Improve touch targets for mobile */
-.period-item, .calendar-container td {
-  min-height: 44px; /* Minimum touch target size */
-}
-
-/* Add momentum scrolling to calendar container */
-.calendar-container {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
-}
-
-/* Update transition timing functions for smoother animations */
-.section, .navbar a, #timetable-items div, .calendar-container td, .primary-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Improve section transitions with a more natural easing */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px); /* Reduced distance for subtlety */
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .sections-container {
+    min-height: -webkit-fill-available;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  input, select, button {
+    font-size: 16px !important; /* Prevent zoom on focus */
   }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-15px); /* Reduced distance for subtlety */
-  }
-}
-
-/* Smoother hover transitions for calendar cells */
-.calendar-container td {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), /* Spring-like bounce */
-              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.calendar-container td:hover {
-  transform: scale(1.03); /* Reduced scale for subtlety */
-}
-
-/* Smoother navbar interactions */
-.navbar a {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.navbar a:active {
-  transform: scale(0.97); /* More subtle scale */
-}
-
-/* Improve button animations */
-.primary-btn {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              background-color 0.2s ease;
-}
-
-.primary-btn:active {
-  transform: scale(0.97);
-}
-
-/* Smoother dark mode toggle transition */
-body, .calendar-container, .navbar, #timetable-items div {
-  transition: background-color 0.3s ease,
-              color 0.3s ease,
-              border-color 0.3s ease;
-}
-
-/* Update text edit pulse animation to be more subtle */
-@keyframes textEditPulse {
-  0% { background-color: rgba(0, 122, 255, 0.05); }
-  50% { background-color: rgba(0, 122, 255, 0.1); }
-  100% { background-color: rgba(0, 122, 255, 0.05); }
-}
-
-/* Dark mode version of the pulse animation */
-@media (prefers-color-scheme: dark) {
-  @keyframes textEditPulse {
-    0% { background-color: rgba(255, 255, 255, 0.05); }
-    50% { background-color: rgba(255, 255, 255, 0.1); }
-    100% { background-color: rgba(255, 255, 255, 0.05); }
-  }
-}
-
-/* Add styles for when the period-text is being edited */
-.period-text:focus {
-  white-space: pre-wrap;
-  overflow: visible;
-  min-height: 1.5em; /* Add this to maintain consistent height */
-}
-
-.settings-info {
-  margin-top: 8px;
-  color: var(--text-color);
-  font-size: 0.9rem;
-  text-align: center;
-  opacity: 0.8;
-}
-
-/* Add these styles for the period interaction */
-.period-item {
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.period-item.clicked {
-  animation: clickPulse 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes clickPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* Styles for the notification */
-.notification {
-  position: fixed;
-  top: -100px; /* Start above the viewport */
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-/* Dark mode styles for notification */
-body.dark-mode .notification {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Animation for notification */
-.notification.show {
-  top: 20px;
 }

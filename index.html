@@ -31,20 +31,32 @@
       <h2 id="day-indicator">Today's Timetable</h2>
       <div id="timetable-items">
         <div class="period-item">
-          <span class="period-label">Period 1:</span>
-          <span class="period-text" data-period="1"></span>
+          <div class="period-header">
+            <span class="period-label">Period 1</span>
+            <span class="period-text" data-period="1"></span>
+          </div>
+          <div class="todo-dropdown"></div>
         </div>
         <div class="period-item">
-          <span class="period-label">Period 2:</span>
-          <span class="period-text" data-period="2"></span>
+          <div class="period-header">
+            <span class="period-label">Period 2</span>
+            <span class="period-text" data-period="2"></span>
+          </div>
+          <div class="todo-dropdown"></div>
         </div>
         <div class="period-item">
-          <span class="period-label">Period 3:</span>
-          <span class="period-text" data-period="3"></span>
+          <div class="period-header">
+            <span class="period-label">Period 3</span>
+            <span class="period-text" data-period="3"></span>
+          </div>
+          <div class="todo-dropdown"></div>
         </div>
         <div class="period-item">
-          <span class="period-label">Period 4:</span>
-          <span class="period-text" data-period="4"></span>
+          <div class="period-header">
+            <span class="period-label">Period 4</span>
+            <span class="period-text" data-period="4"></span>
+          </div>
+          <div class="todo-dropdown"></div>
         </div>
       </div>
       <h2>Calendar</h2>
@@ -76,6 +88,24 @@
         <input type="text" id="period4" placeholder="Enter Period 4 Task">
       </div>
     </section>
+
+    <!-- Todo Section -->
+    <section id="todos" class="section">
+      <h2>Todo List</h2>
+      <div class="todo-form">
+        <input type="text" id="todo-text" placeholder="Enter task...">
+        <input type="date" id="todo-date">
+        <select id="todo-period">
+          <option value="">Select Period</option>
+          <option value="period1">Period 1</option>
+          <option value="period2">Period 2</option>
+          <option value="period3">Period 3</option>
+          <option value="period4">Period 4</option>
+        </select>
+        <button id="add-todo">Add Task</button>
+      </div>
+      <div id="todo-list"></div>
+    </section>
   </div>
 
   <!-- Bottom Navigation Bar -->
@@ -88,6 +118,13 @@
         <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span>Timetable</span>
+    </a>
+    <a href="#todos">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Todo</span>
     </a>
     <a href="#settings">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
