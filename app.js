@@ -267,15 +267,29 @@ function loadTimetable(date) {
 function generateCalendar() {
   const calendarDiv = document.getElementById("calendar-content");
   const currentDate = new Date();
-  const month = currentDate.getMonth();
-  const year = currentDate.getFullYear();
-
-  const monthDays = new Date(year, month + 1, 0).getDate();
-  let calendarHTML = buildCalendarHTML(monthDays, month, year);
+  const endDate = new Date(2025, 5, 30); // June 2025 (month is 0-based)
+  
+  let calendarHTML = '';
+  let targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  
+  while (targetDate <= endDate) {
+    const month = targetDate.getMonth();
+    const year = targetDate.getFullYear();
+    const monthDays = new Date(year, month + 1, 0).getDate();
+    
+    calendarHTML += `
+      <div class="month-container">
+        <h3 class="month-header">${getMonthName(month)} ${year}</h3>
+        ${buildCalendarHTML(monthDays, month, year)}
+      </div>
+    `;
+    
+    targetDate.setMonth(targetDate.getMonth() + 1);
+  }
 
   calendarDiv.innerHTML = calendarHTML;
 
-  document.querySelectorAll(".calendar-container td").forEach(day => {
+  document.querySelectorAll(".calendar-container td:not(.empty-day)").forEach(day => {
     const date = day.getAttribute("data-date");
     const isHolidayDate = isHoliday(date);
     if (!isHolidayDate) {
@@ -286,12 +300,20 @@ function generateCalendar() {
     } else {
       day.addEventListener("click", () => {
         const clickedDate = new Date(date);
-        clickedDate.setDate(clickedDate.getDate() + 1); // Add one day
+        clickedDate.setDate(clickedDate.getDate() + 1);
         alert(`${formatMonthDay(clickedDate)} is a Holiday!`);
         document.getElementById("day-indicator").textContent = `${formatMonthDay(clickedDate)} is a Holiday!`;
       });
     }
   });
+}
+
+function getMonthName(month) {
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  return monthNames[month];
 }
 
 function isWeekendDate(date) {
@@ -314,7 +336,6 @@ function buildCalendarHTML(monthDays, month, year) {
   
   let calendarHTML = "<table><thead><tr>";
   
-  // Shorter day names for mobile
   const dayNames = isMobile ? 
     ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] : 
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -325,8 +346,9 @@ function buildCalendarHTML(monthDays, month, year) {
   
   calendarHTML += "</tr></thead><tbody><tr>";
 
+  // Add empty cells for days before the first day of the month
   for (let i = 0; i < firstDay; i++) {
-    calendarHTML += "<td></td>";
+    calendarHTML += '<td class="empty-day"></td>';
   }
 
   for (let i = 1; i <= monthDays; i++) {
@@ -335,11 +357,10 @@ function buildCalendarHTML(monthDays, month, year) {
     const isWeekend = isWeekendDate(formattedDate);
     const isHolidayDate = !isWeekend && isHoliday(formattedDate);
     const dayType = isWeekend ? 'Weekend' : (isHolidayDate ? 'Holiday' : getDayType(formattedDate));
-    const isLateStart = !isHolidayDate && !isWeekend && lastTwoWednesdays.includes(i);
+    const isLateStart = !isHolidayDate && !isWeekend && (lastTwoWednesdays.includes(i) || getAdditionalLateStartDates().includes(formattedDate));
     
     let cellClass = isWeekend ? "weekend" : (isHolidayDate ? "holiday" : (isLateStart ? "late-start" : dayType.toLowerCase().replace(' ', '')));
     
-    // Shorter day type labels for mobile
     let displayDayType = dayType;
     if (isMobile) {
       displayDayType = dayType.replace('Day ', 'D');
@@ -355,6 +376,14 @@ function buildCalendarHTML(monthDays, month, year) {
       calendarHTML += "</tr><tr>";
     }
   }
+
+  // Add empty cells for days after the last day of the month
+  const lastDay = new Date(year, month, monthDays).getDay();
+  const remainingDays = 6 - lastDay;
+  for (let i = 0; i < remainingDays; i++) {
+    calendarHTML += '<td class="empty-day"></td>';
+  }
+
   calendarHTML += "</tr></tbody></table>";
   return calendarHTML;
 }
@@ -376,11 +405,20 @@ function loadTimetableForToday(date, isLateStart) {
   loadTimetable(date);
 }
 
+function getAdditionalLateStartDates() {
+  return [
+    "2024-12-11" // Add more dates here if needed
+  ];
+}
+
 function checkIfLateStart(date) {
   const currentDate = new Date(date);
   const monthDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, currentDate.getMonth(), currentDate.getFullYear());
-  return lastTwoWednesdays.includes(currentDate.getDate());
+  const formattedDate = formatDate(currentDate);
+  
+  // Check both last two Wednesdays and additional late start dates
+  return lastTwoWednesdays.includes(currentDate.getDate()) || getAdditionalLateStartDates().includes(formattedDate);
 }
 
 function displayTimetableForDate(date, isLateStart) {

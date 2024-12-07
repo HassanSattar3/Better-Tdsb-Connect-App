@@ -104,13 +104,11 @@ body.dark-mode .navbar a:not(.active) .nav-icon {
 }
 
 #timetable {
-  margin: 0 auto;
-  padding: 32px 0;
-  width: 100%;
-  max-width: 800px;
+  padding-top: 48px;
+  height: 100vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .section.active {
@@ -140,7 +138,8 @@ body.dark-mode .navbar a:not(.active) .nav-icon {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 20px; /* Reduced margin before calendar */
+  margin-bottom: 20px;
+  padding: 0 16px;
 }
 
 #timetable-items div {
@@ -148,24 +147,28 @@ body.dark-mode .navbar a:not(.active) .nav-icon {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
-  border-radius: 0;
-  margin: 16px 0;
-  padding: 8px 0;
+  border-radius: 12px;
+  margin: 0;
+  padding: 16px;
   font-size: 1.1rem;
   color: #1c1c1e;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  transform: none;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
 }
 
-#timetable-items div:last-child {
-  border-bottom: none;
+#timetable-items div:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 body.dark-mode #timetable-items div {
   background: transparent;
   color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode #timetable-items div:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 #calendar-content {
@@ -174,6 +177,44 @@ body.dark-mode #timetable-items div {
   margin: 0 auto;
   padding: 8px;
   box-sizing: border-box;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 32px;
+}
+
+.month-container {
+  margin-bottom: 32px;
+}
+
+.month-header {
+  text-align: center;
+  margin: 16px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+body.dark-mode .month-header {
+  color: #ffffff;
+}
+
+/* Add smooth scrollbar for webkit browsers */
+#calendar-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+#calendar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#calendar-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+body.dark-mode #calendar-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .calendar-container {
@@ -215,58 +256,77 @@ body.dark-mode #timetable-items div {
 /* Mobile-specific styles */
 @media (max-width: 480px) {
   .calendar-container {
-    padding: 8px 4px;
-    margin-top: 12px;
+    padding: 4px 2px;
+    margin-top: 8px;
     overflow-x: visible;
     max-height: none;
   }
 
   .calendar-container table {
-    border-spacing: 2px;
+    border-spacing: 1px;
     width: 100%;
     table-layout: fixed;
   }
 
   .calendar-container th {
-    font-size: 0.75rem;
-    padding: 4px 2px;
+    font-size: 0.7rem;
+    padding: 2px 1px;
   }
 
   .calendar-container td {
-    min-height: 40px;
+    min-height: 32px;
     height: auto;
-    padding: 6px 2px;
-    font-size: 0.8rem;
+    padding: 4px 1px;
+    font-size: 0.75rem;
     vertical-align: middle;
   }
 
   .day-type {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     display: block;
-    margin-top: 2px;
+    margin-top: 1px;
+  }
+
+  .month-header {
+    font-size: 1rem;
+    margin: 12px 0 8px 0;
+  }
+
+  .month-container {
+    margin-bottom: 24px;
   }
 
   /* Make late start indicator more compact */
   .late-start::after {
     content: "LS";
-    position: absolute;
-    top: 2px;
-    right: 2px;
     font-size: 0.6rem;
-    background: rgba(255, 45, 85, 0.2);
-    padding: 1px 2px;
-    border-radius: 3px;
+    padding: 2px 4px;
+  }
+}
+
+/* Even smaller screens (iPhone 6 and similar) */
+@media (max-width: 375px) {
+  .calendar-container td {
+    min-height: 28px;
+    padding: 2px 1px;
+    font-size: 0.7rem;
   }
 
-  /* Hide br tags on mobile */
-  .calendar-container td br {
-    display: none;
+  .day-type {
+    font-size: 0.6rem;
   }
-  
-  /* Adjust spacing for calendar title */
-  #timetable h2:last-of-type {
-    font-size: 1.1rem;
-    margin: 16px 0 8px 0;
+
+  .calendar-container th {
+    font-size: 0.65rem;
+  }
+
+  .month-header {
+    font-size: 0.9rem;
+    margin: 10px 0 6px 0;
+  }
+
+  .month-container {
+    margin-bottom: 20px;
   }
 }
 
@@ -1007,7 +1067,7 @@ body.dark-mode #day-indicator {
 
 /* Improved spacing */
 #timetable {
-  padding-top: 32px; /* Reduced top padding */
+  padding-top: 48px;
   height: 100vh;
   overflow-y: auto;
   display: flex;
@@ -1049,531 +1109,58 @@ body.dark-mode .navbar a {
 }
 
 /* Editable period styles */
-.period-item {
-  position: relative;
+.period-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 8px 12px;
   padding: 16px;
   background: var(--card-bg);
   border-radius: 12px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
   border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.period-item:hover {
+.period-header:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.period-item .period-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
+.period-label::after {
+  content: ':';
+  margin-right: 2px;
 }
 
-.period-item .period-label {
-  font-weight: 600;
-  color: var(--text-color);
-  min-width: 80px;
-}
-
-.period-item .period-text {
-  color: var(--text-color);
-  font-weight: 500;
-}
-
-.period-item .todo-dropdown {
-  margin-top: 12px;
-  padding: 8px;
-  background: var(--input-bg);
-  border-radius: 8px;
-  display: none;
-  border-top: 1px solid var(--border-color);
-  overflow: hidden;
-  max-height: 0;
-  transition: all 0.3s ease;
-  opacity: 0;
-}
-
-.period-item.has-todos::after {
-  content: '▼';
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  color: var(--text-secondary);
-  font-size: 12px;
-  transition: transform 0.3s ease;
-}
-
-.period-item.has-todos:hover::after {
-  opacity: 0.8;
-}
-
-.period-item.has-todos.dropdown-open::after {
-  transform: rotate(180deg);
-}
-
-.period-item.has-todos.dropdown-open .todo-dropdown {
-  display: block;
-  max-height: 500px;
-  opacity: 1;
-}
-
-.todo-dropdown .todo-mini-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  background: var(--card-bg);
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-.todo-dropdown .todo-mini-item:last-child {
-  margin-bottom: 0;
-}
-
-.todo-dropdown .todo-mini-item span {
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.todo-dropdown .todo-mini-item small {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-left: 8px;
-}
-
-.todo-dropdown .todo-mini-item.overdue { border-left-color: rgba(255, 68, 68, 0.8); background: rgba(255, 68, 68, 0.05); }
-.todo-dropdown .todo-mini-item.due-today { border-left-color: rgba(255, 136, 0, 0.8); background: rgba(255, 136, 0, 0.05); }
-.todo-dropdown .todo-mini-item.due-tomorrow { border-left-color: rgba(255, 204, 0, 0.8); background: rgba(255, 204, 0, 0.05); }
-.todo-dropdown .todo-mini-item.due-later { border-left-color: rgba(68, 204, 68, 0.8); background: rgba(68, 204, 68, 0.05); }
-
-/* Todo Form Styles */
-.todo-form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 15px;
-  padding: 16px;
-  background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--border-color);
-}
-
-@media (min-width: 768px) {
-  .todo-form {
-    grid-template-columns: 2fr 1fr 1fr auto;
-    align-items: start;
-  }
-}
-
-.todo-form input,
-.todo-form select {
-  padding: 10px 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--input-bg);
-  color: var(--text-color);
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.todo-form input:focus,
-.todo-form select:focus {
-  border-color: #2196F3;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-}
-
-.todo-form button {
-  padding: 10px 20px;
-  background: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.todo-form button:hover {
-  background: #1976D2;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
-}
-
-.todo-form button:active {
-  transform: translateY(0);
-}
-
-/* Todo List Styles */
-#todo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 15px;
-}
-
-.todo-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--card-bg);
-  border-radius: 10px;
-  box-shadow: var(--card-shadow);
-  gap: 12px;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-}
-
-.todo-item:hover {
-  transform: translateX(5px);
-}
-
-.todo-item .checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border-color);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.todo-item .checkbox.checked {
-  background: #2196F3;
-  border-color: #2196F3;
-}
-
-.todo-item .checkbox.checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 12px;
-}
-
-.todo-item .todo-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.todo-item .todo-text {
-  margin: 0;
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: var(--text-color);
-}
-
-.todo-item .todo-date {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.todo-item .delete-todo {
-  padding: 6px;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.2s ease;
-  border-radius: 6px;
-}
-
-.todo-item .delete-todo:hover {
-  opacity: 1;
-  background: rgba(255, 68, 68, 0.1);
-  color: #ff4444;
-}
-
-/* Dark mode enhancements */
-body.dark-mode .todo-form,
-body.dark-mode .todo-item,
-body.dark-mode .period-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .todo-dropdown {
-  background: rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .todo-mini-item {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Light mode specific styles */
-body:not(.dark-mode) .todo-dropdown {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-body:not(.dark-mode) .todo-mini-item {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Completed todo styling */
-.todo-item.completed .todo-text {
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-
-.todo-item.completed {
-  opacity: 0.7;
-  background: var(--input-bg);
-}
-
-/* Section transitions */
-.section {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-}
-
-.section.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Mobile-first base styles */
-:root {
-  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.todo-form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 12px;
-  padding: 16px;
-  background: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-@media (min-width: 768px) {
-  .todo-form {
-    grid-template-columns: 2fr 1fr 1fr auto;
-    align-items: start;
-    position: relative;
-  }
-}
-
-.todo-form input,
-.todo-form select {
-  padding: 12px 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--input-bg);
-  color: var(--text-color);
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  -webkit-appearance: none;
-  appearance: none;
-  min-height: 44px; /* Minimum touch target size */
-}
-
-.todo-form button {
-  padding: 12px 20px;
-  background: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  min-height: 44px; /* Minimum touch target size */
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Sections container */
-.sections-container {
-  padding-bottom: calc(60px + var(--safe-area-inset-bottom));
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Period items */
-.period-item {
-  position: relative;
-  padding: 16px;
-  background: var(--card-bg);
-  border-radius: 12px;
-  margin: 8px 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: 1px solid var(--border-color);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.period-item:active {
-  transform: scale(0.98);
-}
-
-.period-item .period-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-  padding-right: 24px; /* Space for arrow */
-}
-
-.period-item .period-label {
+.period-label {
   font-weight: 600;
   color: var(--text-color);
   min-width: 75px;
   font-size: 0.95rem;
 }
 
-.period-item .period-text {
+.period-text {
   color: var(--text-color);
   font-weight: 500;
   font-size: 0.95rem;
 }
 
-.period-item .todo-dropdown {
-  margin-top: 12px;
-  padding: 8px;
-  background: var(--input-bg);
-  border-radius: 8px;
+.todo-dropdown {
   display: none;
-  border-top: 1px solid var(--border-color);
-  overflow: hidden;
-  max-height: 0;
-  transition: all 0.3s ease;
-  opacity: 0;
 }
 
-.period-item.has-todos::after {
-  content: '▼';
-  position: absolute;
-  right: 16px;
-  top: 18px;
-  color: var(--text-secondary);
-  font-size: 10px;
-  transition: transform 0.3s ease;
+/* Dark mode styles */
+body.dark-mode .period-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-.period-item.has-todos.dropdown-open::after {
-  transform: rotate(180deg);
+body.dark-mode .period-header:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.period-item.has-todos.dropdown-open .todo-dropdown {
-  display: block;
-  max-height: 500px;
-  opacity: 1;
-}
-
-.todo-dropdown .todo-mini-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  background: var(--card-bg);
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-  min-height: 44px; /* Minimum touch target size */
-}
-
-.todo-dropdown .todo-mini-item:last-child {
-  margin-bottom: 0;
-}
-
-.todo-dropdown .todo-mini-item span {
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-.todo-dropdown .todo-mini-item small {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-left: 8px;
-}
-
-/* Todo List */
-#todo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-}
-
-.todo-item {
-  display: flex;
-  align-items: center;
-  padding: 14px;
-  background: var(--card-bg);
-  border-radius: 10px;
-  box-shadow: var(--card-shadow);
-  gap: 12px;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-  min-height: 44px; /* Minimum touch target size */
-}
-
-.todo-item .checkbox {
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.todo-item .delete-todo {
-  width: 44px; /* Minimum touch target size */
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Status colors with better contrast */
-.todo-dropdown .todo-mini-item.overdue { 
-  border-left-color: rgba(255, 68, 68, 0.9); 
-  background: rgba(255, 68, 68, 0.08);
-}
-.todo-dropdown .todo-mini-item.due-today { 
-  border-left-color: rgba(255, 136, 0, 0.9); 
-  background: rgba(255, 136, 0, 0.08);
-}
-.todo-dropdown .todo-mini-item.due-tomorrow { 
-  border-left-color: rgba(255, 204, 0, 0.9); 
-  background: rgba(255, 204, 0, 0.08);
-}
-.todo-dropdown .todo-mini-item.due-later { 
-  border-left-color: rgba(68, 204, 68, 0.9); 
-  background: rgba(68, 204, 68, 0.08);
-}
+/* Remove all .period-item styles */
 
 /* PWA specific styles */
 @media (display-mode: standalone) {
@@ -1620,5 +1207,65 @@ body {
   
   input, select, button {
     font-size: 16px !important; /* Prevent zoom on focus */
+  }
+}
+
+/* For PWA standalone mode, add extra padding to account for status bar */
+@media (display-mode: standalone) {
+  #timetable {
+    padding-top: calc(48px + env(safe-area-inset-top));
+  }
+}
+
+.calendar-container td.empty-day {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+.month-container:last-child {
+  margin-bottom: 0;
+  padding-bottom: 16px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  position: relative;
+}
+
+.month-container:last-child::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.05));
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  pointer-events: none;
+}
+
+body.dark-mode .month-container:last-child::after {
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05));
+}
+
+/* Mobile adjustments for the ending */
+@media (max-width: 480px) {
+  #calendar-content {
+    padding-bottom: 24px;
+  }
+
+  .month-container:last-child {
+    padding-bottom: 12px;
+  }
+}
+
+@media (max-width: 375px) {
+  #calendar-content {
+    padding-bottom: 20px;
+  }
+
+  .month-container:last-child {
+    padding-bottom: 10px;
   }
 }
