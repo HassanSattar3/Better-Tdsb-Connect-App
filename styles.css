@@ -1269,3 +1269,124 @@ body.dark-mode .month-container:last-child::after {
     padding-bottom: 10px;
   }
 }
+
+/* Today's date highlight */
+.calendar-container td.today {
+  border: 2px solid #007AFF !important;
+  box-shadow: 0 0 10px rgba(0, 122, 255, 0.3) !important;
+  position: relative;
+  z-index: 1;
+}
+
+body.dark-mode .calendar-container td.today {
+  border: 2px solid #0A84FF !important;
+  box-shadow: 0 0 10px rgba(10, 132, 255, 0.3) !important;
+}
+
+/* Ensure today's highlight works with other states */
+.calendar-container td.today.day1,
+.calendar-container td.today.day2,
+.calendar-container td.today.late-start,
+.calendar-container td.today.holiday {
+  border: 2px solid #007AFF !important;
+}
+
+body.dark-mode .calendar-container td.today.day1,
+body.dark-mode .calendar-container td.today.day2,
+body.dark-mode .calendar-container td.today.late-start,
+body.dark-mode .calendar-container td.today.holiday {
+  border: 2px solid #0A84FF !important;
+}
+
+/* Weekend and Holiday message styles */
+.period-header.weekend-holiday {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px;
+  background: linear-gradient(135deg, rgba(255, 59, 48, 0.08), rgba(255, 59, 48, 0.12));
+  border: none;
+  border-radius: 16px;
+  margin: 24px 16px;
+  padding: 24px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #FF3B30;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.period-header.weekend-holiday:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(255, 59, 48, 0.3), transparent);
+}
+
+.holiday-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 8px;
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+.holiday-message:hover {
+  transform: translateY(-2px);
+}
+
+.holiday-message div:first-child {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.holiday-message div:last-child {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  font-weight: 500;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+body.dark-mode .period-header.weekend-holiday {
+  background: linear-gradient(135deg, rgba(255, 69, 58, 0.12), rgba(255, 69, 58, 0.15));
+  color: #FF453A;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .period-header.weekend-holiday:before {
+  background: linear-gradient(to right, transparent, rgba(255, 69, 58, 0.4), transparent);
+}
+
+@media (max-width: 480px) {
+  .period-header.weekend-holiday {
+    min-height: 120px;
+    margin: 20px 12px;
+    padding: 20px;
+  }
+  
+  .holiday-message div:first-child {
+    font-size: 1.2rem;
+  }
+  
+  .holiday-message div:last-child {
+    font-size: 0.9rem;
+    max-width: 260px;
+  }
+}
+
+@media (max-width: 375px) {
+  .period-header.weekend-holiday {
+    margin: 16px 8px;
+    padding: 16px;
+  }
+}

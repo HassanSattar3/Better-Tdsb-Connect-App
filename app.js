@@ -205,10 +205,20 @@ function getDayType(date) {
 
 function displayDayType(date, isToday = true, isLateStart = false) {
   const dayIndicator = document.getElementById("day-indicator");
-  const dayType = isHoliday(date) ? 'Holiday' : getDayType(date);
   const displayDate = new Date(date);
-  displayDate.setDate(displayDate.getDate() + 1);
+  displayDate.setDate(displayDate.getDate() + 1); // Add 1 day before checking
+  const formattedDate = formatDate(displayDate);
   const formattedDisplayDate = formatMonthDay(displayDate);
+  
+  let dayType;
+  if (isWeekend(displayDate)) {
+    dayType = 'Weekend';
+  } else if (isHoliday(formattedDate)) {
+    dayType = 'Holiday';
+  } else {
+    dayType = getDayType(formattedDate);
+  }
+  
   const lateStartText = isLateStart ? " (Late Start)" : "";
 
   // Set initial content
@@ -231,33 +241,80 @@ function displayDayType(date, isToday = true, isLateStart = false) {
 
 function loadTimetable(date) {
   const timetable = JSON.parse(localStorage.getItem('timetable')) || {};
-  const dayType = getDayType(date);
   const timetableItems = document.getElementById('timetable-items');
+  const currentDate = new Date(date);
+  currentDate.setDate(currentDate.getDate() + 1); // Add 1 day before checking
+  const formattedDate = formatDate(currentDate);
   
   // Fade out
   timetableItems.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
   timetableItems.style.opacity = '0';
   
-  // Update content after fade out
   setTimeout(() => {
-    document.querySelectorAll('.period-text').forEach((periodText, index) => {
-      const periodNumber = index + 1;
-      let periodContent = timetable[`period${periodNumber}`] || '';
-      
-      if (dayType === 'Day 2' && (periodNumber === 3 || periodNumber === 4)) {
-        const swappedNumber = periodNumber === 3 ? 4 : 3;
-        periodContent = timetable[`period${swappedNumber}`] || '';
-      }
-      
-      periodText.textContent = periodContent;
-      
-      // Trigger input event to resize after setting content
-      const inputEvent = new Event('input', {
-        bubbles: true,
-        cancelable: true,
+    const formattedDisplayDate = formatMonthDay(currentDate);
+    
+    // Check if it's a weekend
+    if (isWeekend(currentDate)) {
+      timetableItems.innerHTML = `
+        <div class="period-header weekend-holiday">
+          <div class="holiday-message">
+            <div>${formattedDisplayDate} is a Weekend</div>
+          </div>
+        </div>
+      `;
+    }
+    // Check if it's a holiday
+    else if (isHoliday(formattedDate)) {
+      timetableItems.innerHTML = `
+        <div class="period-header weekend-holiday">
+          <div class="holiday-message">
+            <div>${formattedDisplayDate} is a Holiday</div>
+            <div>There isn't any school today</div>
+          </div>
+        </div>
+      `;
+    }
+    // Regular school day
+    else {
+      const dayType = getDayType(formattedDate);
+      timetableItems.innerHTML = `
+        <div class="period-header">
+          <span class="period-label">Period 1</span>
+          <span class="period-text" data-period="1"></span>
+        </div>
+        <div class="period-header">
+          <span class="period-label">Period 2</span>
+          <span class="period-text" data-period="2"></span>
+        </div>
+        <div class="period-header">
+          <span class="period-label">Period 3</span>
+          <span class="period-text" data-period="3"></span>
+        </div>
+        <div class="period-header">
+          <span class="period-label">Period 4</span>
+          <span class="period-text" data-period="4"></span>
+        </div>
+      `;
+
+      document.querySelectorAll('.period-text').forEach((periodText, index) => {
+        const periodNumber = index + 1;
+        let periodContent = timetable[`period${periodNumber}`] || '';
+        
+        if (dayType === 'Day 2' && (periodNumber === 3 || periodNumber === 4)) {
+          const swappedNumber = periodNumber === 3 ? 4 : 3;
+          periodContent = timetable[`period${swappedNumber}`] || '';
+        }
+        
+        periodText.textContent = periodContent;
+        
+        // Trigger input event to resize after setting content
+        const inputEvent = new Event('input', {
+          bubbles: true,
+          cancelable: true,
+        });
+        periodText.dispatchEvent(inputEvent);
       });
-      periodText.dispatchEvent(inputEvent);
-    });
+    }
     
     // Fade in
     timetableItems.style.opacity = '1';
@@ -291,20 +348,12 @@ function generateCalendar() {
 
   document.querySelectorAll(".calendar-container td:not(.empty-day)").forEach(day => {
     const date = day.getAttribute("data-date");
-    const isHolidayDate = isHoliday(date);
-    if (!isHolidayDate) {
-      day.addEventListener("click", () => {
-        const isLateStart = day.getAttribute("data-late-start") === "true";
-        displayTimetableForDate(date, isLateStart);
-      });
-    } else {
-      day.addEventListener("click", () => {
-        const clickedDate = new Date(date);
-        clickedDate.setDate(clickedDate.getDate() + 1);
-        alert(`${formatMonthDay(clickedDate)} is a Holiday!`);
-        document.getElementById("day-indicator").textContent = `${formatMonthDay(clickedDate)} is a Holiday!`;
-      });
-    }
+    const isLateStart = day.getAttribute("data-late-start") === "true";
+    
+    // Add click handler for all dates (including holidays)
+    day.addEventListener("click", () => {
+      displayTimetableForDate(date, isLateStart);
+    });
   });
 }
 
@@ -333,6 +382,7 @@ function buildCalendarHTML(monthDays, month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const lastTwoWednesdays = findLastTwoWednesdays(monthDays, month, year);
   const isMobile = window.innerWidth <= 480;
+  const today = new Date();
   
   let calendarHTML = "<table><thead><tr>";
   
@@ -358,8 +408,12 @@ function buildCalendarHTML(monthDays, month, year) {
     const isHolidayDate = !isWeekend && isHoliday(formattedDate);
     const dayType = isWeekend ? 'Weekend' : (isHolidayDate ? 'Holiday' : getDayType(formattedDate));
     const isLateStart = !isHolidayDate && !isWeekend && (lastTwoWednesdays.includes(i) || getAdditionalLateStartDates().includes(formattedDate));
+    const isToday = date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
     
     let cellClass = isWeekend ? "weekend" : (isHolidayDate ? "holiday" : (isLateStart ? "late-start" : dayType.toLowerCase().replace(' ', '')));
+    if (isToday) {
+      cellClass += " today";
+    }
     
     let displayDayType = dayType;
     if (isMobile) {
@@ -423,13 +477,16 @@ function checkIfLateStart(date) {
 
 function displayTimetableForDate(date, isLateStart) {
   const dayIndicator = document.getElementById("day-indicator");
+  const displayDate = new Date(date);
+  displayDate.setDate(displayDate.getDate() + 1);
+  const formattedDate = formatDate(displayDate);
+  
   dayIndicator.style.animation = 'fadeOut 0.3s forwards';
   
   setTimeout(() => {
-    if (isHoliday(date)) {
-      const displayDate = new Date(date);
-      displayDate.setDate(displayDate.getDate() + 1);
-      dayIndicator.textContent = `${formatMonthDay(displayDate)} is a Holiday!`;
+    if (isHoliday(formattedDate)) {
+      dayIndicator.textContent = `${formatMonthDay(displayDate)} - Holiday`;
+      loadTimetable(date); // This will show the holiday message
     } else {
       displayDayType(date, false, isLateStart);
       loadTimetable(date);
