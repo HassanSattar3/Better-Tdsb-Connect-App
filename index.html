@@ -77,6 +77,44 @@
       </div>
     </section>
 
+    <!-- AI Chatbot Section -->
+    <section id="chatbot" class="section">
+      <h2>AI Schedule Assistant</h2>
+      <div class="api-key-container">
+        <div class="api-provider-selector">
+          <button class="provider-button active" data-provider="openai">OpenAI</button>
+          <button class="provider-button" data-provider="groq">Groq</button>
+        </div>
+        
+        <div class="api-key-input-group" id="openai-group">
+          <label for="openai-key">OpenAI API Key</label>
+          <input type="password" id="openai-key" class="api-key-input" placeholder="Enter your OpenAI API key">
+          <button class="save-button" data-provider="openai">Save OpenAI Key</button>
+        </div>
+
+        <div class="api-key-input-group hidden" id="groq-group">
+          <label for="groq-key">Groq API Key</label>
+          <input type="password" id="groq-key" class="api-key-input" placeholder="Enter your Groq API key">
+          <button class="save-button" data-provider="groq">Save Groq Key</button>
+        </div>
+      </div>
+
+      <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+          <!-- Messages will be added here -->
+        </div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input" placeholder="Ask about your schedule...">
+          <button id="send-message">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- Bottom Navigation Bar -->
@@ -90,6 +128,14 @@
       </svg>
       <span>Timetable</span>
     </a>
+    <a href="#chatbot">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 7V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 12H9M15 12H16M12 16V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>Chatbot</span>
+    </a>
     <a href="#settings">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -100,5 +146,6 @@
   </nav>
 
   <script src="app.js"></script>
+  <script src="chatbot.js"></script>
 </body>
 </html>
