@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Schedule Configuration
     const scheduleConfig = {
         semester1Start: '2024-09-03', // First semester start
-        semester1End: '2025-02-03',   // First semester end
+        semester1End: '2025-01-30',   // First semester end
         specialDates: {
             // Holidays and PD Days
             '2024-09-02': { type: 'holiday', name: 'Labour Day' },
