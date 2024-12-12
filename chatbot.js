@@ -86,9 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const periods = [];
         for (let i = 1; i <= 4; i++) {
             const periodKey = `period${i}`;
-            const periodInput = document.getElementById(periodKey);
-            // First try to get value from input field, then from localStorage, then fallback to 'Not set'
-            const periodData = periodInput ? periodInput.value : localStorage.getItem(periodKey);
+            const periodData = localStorage.getItem(periodKey) || localStorage.getItem(`sw_${periodKey}`);
             periods.push({
                 period: i,
                 class: periodData && periodData.trim() !== '' ? periodData : 'Not set'
@@ -105,6 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (periodInput) {
             periodInput.value = className;
         }
+    };
+
+    const saveSchedule = (day1Schedule, day2Schedule) => {
+        localStorage.setItem('day1Schedule', JSON.stringify(day1Schedule));
+        localStorage.setItem('day2Schedule', JSON.stringify(day2Schedule));
     };
 
     // Initialize schedule if not set
@@ -267,22 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextSchoolDay = getNextValidSchoolDay(date);
         const dayPattern = getDayPattern(nextSchoolDay.date);
         
-        // Get periods directly from localStorage
-        const periods = getPeriodsFromStorage();
-        
-        // Create day schedules
-        const day1Schedule = periods.map(p => ({ ...p }));
-        const day2Schedule = periods.map((p, index) => {
-            if (index < 2) {
-                return { ...p };
-            } else {
-                const swappedIndex = index === 2 ? 3 : 2;
-                return {
-                    period: index + 1,
-                    class: periods[swappedIndex].class
-                };
-            }
-        });
+        // Retrieve saved schedules from localStorage
+        const day1Schedule = JSON.parse(localStorage.getItem('day1Schedule')) || [];
+        const day2Schedule = JSON.parse(localStorage.getItem('day2Schedule')) || [];
 
         const userSchedule = {
             day1: day1Schedule,
@@ -553,4 +543,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSavedPeriods();
     initializeSchedule();
     setupSettingsListeners();
-}); 
+});
