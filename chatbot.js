@@ -150,7 +150,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 periodInput.addEventListener('change', () => {
                     const className = periodInput.value.trim() || 'Not set';
                     savePeriodToStorage(i, className);
-                    initializeSchedule(); // Reinitialize schedule with new values
+                    const periods = getPeriodsFromStorage();
+                    const day1Schedule = periods.map(p => ({ ...p }));
+                    const day2Schedule = periods.map((p, index) => {
+                        if (index < 2) {
+                            return { ...p };
+                        } else {
+                            const swappedIndex = index === 2 ? 3 : 2;
+                            return {
+                                period: index + 1,
+                                class: periods[swappedIndex].class
+                            };
+                        }
+                    });
+                    saveSchedule(day1Schedule, day2Schedule); // Update only the affected period
                 });
             }
         }
@@ -303,15 +316,50 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
+    // Add this new helper function
+    const parseDateQuery = (message) => {
+        const today = new Date();
+        today.setHours(12, 0, 0, 0);
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const dayAfterTomorrow = new Date(today);
+        dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+
+        message = message.toLowerCase();
+        
+        if (message.includes('tomorrow')) {
+            return tomorrow;
+        } else if (message.includes('day after tomorrow')) {
+            return dayAfterTomorrow;
+        } else if (message.includes('today')) {
+            return today;
+        } else if (message.match(/next (monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i)) {
+            const dayMap = {
+                'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4,
+                'friday': 5, 'saturday': 6, 'sunday': 0
+            };
+            const targetDay = dayMap[message.match(/next (monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i)[1].toLowerCase()];
+            const nextDate = new Date(today);
+            while (nextDate.getDay() !== targetDay) {
+                nextDate.setDate(nextDate.getDate() + 1);
+            }
+            return nextDate;
+        }
+        
+        // Check for YYYY-MM-DD format
+        const dateMatch = message.match(/\d{4}-\d{2}-\d{2}/);
+        if (dateMatch) {
+            return new Date(dateMatch[0]);
+        }
+        
+        return today;
+    };
+
     // Process message with Groq
     const processGroqMessage = async (message, apiKey) => {
-        let targetDate = new Date();
-        const dateMatch = message.match(/(?:on|for|about)\s+(\d{4}-\d{2}-\d{2})/i);
-        if (dateMatch) {
-            targetDate = new Date(dateMatch[1]);
-        }
-        targetDate.setHours(12, 0, 0, 0);
-
+        const targetDate = parseDateQuery(message);
         const schedule = getScheduleInfo(targetDate);
         const dayPattern = schedule.dayPattern;
         const isWeekendOrHoliday = schedule.isWeekend || schedule.isHoliday;
@@ -329,33 +377,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const systemPrompt = `You are a helpful AI assistant that helps students with their TDSB high school schedule. 
-        When responding about schedules, ALWAYS format the day as "Day X" (never just the number).
+        When responding about schedules:
+        1. ALWAYS format the day as "Day X" (never just the number)
+        2. ALWAYS list ALL periods and classes for the requested date
+        3. Mention if it's a late start day
         
         Current schedule information for ${schedule.currentDate}:
-        ${isWeekendOrHoliday ? `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
-        The next school day will be ${schedule.nextSchoolDate}, which will be Day ${dayPattern.dayNumber}` : ''}
+        ${isWeekendOrHoliday ? 
+            `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
+            The next school day will be ${schedule.nextSchoolDate}, which will be Day ${dayPattern.dayNumber} with the following schedule:` : 
+            `This is Day ${dayPattern.dayNumber} with the following schedule:`
+        }
         
-        - Day Type: ${dayPattern.type === 'school_day' ? `Day ${dayPattern.dayNumber}` : dayPattern.name}
-        - Time: ${schedule.currentTime}
-        ${schedule.isLateStart ? '- This is a Late Start day!' : ''}
-        ${schedule.isHoliday ? `- This is a holiday: ${dayPattern.name}` : ''}
+        ${schedule.periods.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
+        ${schedule.isLateStart ? '\nThis is a Late Start day!' : ''}
+        ${schedule.isHoliday ? `\nThis is a holiday: ${dayPattern.name}` : ''}
 
-        Your schedule for Day 1:
-        ${day1Schedule.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
-
-        Your schedule for Day 2:
-        ${day2Schedule.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
-        
-        Schedule Rules:
-        - School days alternate between Day 1 and Day 2
-        - Late Start days begin 2 hours later than regular days
-        - The current semester runs from ${scheduleConfig.semester1Start} to ${scheduleConfig.semester1End}
-
-        IMPORTANT FORMATTING RULES:
-        1. ALWAYS say "Day 1" or "Day 2" (never just the number)
-        2. When mentioning a date and day, format it as "On [Date], Day [1/2]"
-        3. For holidays or special dates, say "On [Date], [Holiday Name]"
-        4. For weekends, say "On [Date] (Weekend). The next school day will be [Next Date], Day [1/2]"`;
+        When answering:
+        1. Start with the date and day pattern
+        2. List ALL periods and their classes
+        3. Mention if it's a late start day
+        4. Format response as:
+           "On [Date], Day [1/2]:
+           Period 1: [Class]
+           Period 2: [Class]
+           Period 3: [Class]
+           Period 4: [Class]
+           [Late Start notice if applicable]"`;
 
         try {
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -390,27 +438,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Process message with OpenAI
     const processOpenAIMessage = async (message, apiKey) => {
-        const schedule = getScheduleInfo();
+        const targetDate = parseDateQuery(message);
+        const schedule = getScheduleInfo(targetDate);
         const isWeekendOrHoliday = schedule.isWeekend || schedule.isHoliday;
         
         const systemPrompt = `You are a helpful AI assistant that helps students with their school schedule. 
-        ALWAYS format the day as "Day X" (never just the number).
+        When responding about schedules:
+        1. ALWAYS format the day as "Day X" (never just the number)
+        2. ALWAYS list ALL periods and classes for the requested date
+        3. Mention if it's a late start day
         
-        Current schedule information:
-        ${isWeekendOrHoliday ? `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
-        The next school day will be ${schedule.nextSchoolDate}, which will be Day ${schedule.dayPattern.dayNumber}` : ''}
+        Current schedule information for ${schedule.currentDate}:
+        ${isWeekendOrHoliday ? 
+            `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
+            The next school day will be ${schedule.nextSchoolDate}, which will be Day ${schedule.dayPattern.dayNumber} with the following schedule:` : 
+            `This is Day ${schedule.dayPattern.dayNumber} with the following schedule:`
+        }
         
-        - Day: ${schedule.dayInfo}
-        - Current Time: ${schedule.currentTime}
-        - Current Date: ${schedule.currentDate}
-        - Classes:
-          ${schedule.periods.map(p => `Period ${p.period}: ${p.class}`).join('\n          ')}
-        
-        IMPORTANT FORMATTING RULES:
-        1. ALWAYS say "Day 1" or "Day 2" (never just the number)
-        2. When mentioning a date and day, format it as "On [Date], Day [1/2]"
-        3. For holidays or special dates, say "On [Date], [Holiday Name]"
-        4. For weekends, say "On [Date] (Weekend). The next school day will be [Next Date], Day [1/2]"`;
+        ${schedule.periods.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
+        ${schedule.isLateStart ? '\nThis is a Late Start day!' : ''}
+        ${schedule.isHoliday ? `\nThis is a holiday: ${schedule.dayPattern.name}` : ''}
+
+        When answering:
+        1. Start with the date and day pattern
+        2. List ALL periods and their classes
+        3. Mention if it's a late start day
+        4. Format response as:
+           "On [Date], Day [1/2]:
+           Period 1: [Class]
+           Period 2: [Class]
+           Period 3: [Class]
+           Period 4: [Class]
+           [Late Start notice if applicable]"`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -538,9 +597,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Update all data from localStorage
+    const updateFromLocalStorage = () => {
+        // Load saved API keys
+        const openaiKey = localStorage.getItem('openai_api_key');
+        const groqKey = localStorage.getItem('groq_api_key');
+        if (openaiKey) openaiInput.value = openaiKey;
+        if (groqKey) groqInput.value = groqKey;
+
+        // Load saved periods
+        for (let i = 1; i <= 4; i++) {
+            const periodInput = document.getElementById(`period${i}`);
+            if (periodInput) {
+                const savedValue = localStorage.getItem(`period${i}`);
+                if (savedValue) {
+                    periodInput.value = savedValue;
+                }
+            }
+        }
+
+        // Reinitialize schedule
+        initializeSchedule();
+        setupSettingsListeners();
+    };
+
+    // Modify the startPeriodicUpdate function
+    const startPeriodicUpdate = () => {
+        const chatbotNavLink = document.querySelector('a[href="#chatbot"]');
+        if (chatbotNavLink) {
+            chatbotNavLink.addEventListener('click', () => {
+                updateFromLocalStorage();
+                showBetaNotification();
+            });
+        }
+
+        // Also update when directly navigating to #chatbot
+        if (window.location.hash === '#chatbot') {
+            updateFromLocalStorage();
+            showBetaNotification();
+        }
+    };
+
     // Initialize
-    loadSavedKeys();
-    loadSavedPeriods();
-    initializeSchedule();
-    setupSettingsListeners();
+    updateFromLocalStorage();
+    startPeriodicUpdate();
 });
