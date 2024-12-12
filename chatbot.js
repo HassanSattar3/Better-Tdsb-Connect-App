@@ -359,6 +359,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Process message with Groq
     const processGroqMessage = async (message, apiKey) => {
+        if (!isEducationRelated(message)) {
+            return "I can only answer questions about school-related topics. Please ask me about your schedule, classes, or other educational matters.";
+        }
+        
         const targetDate = parseDateQuery(message);
         const schedule = getScheduleInfo(targetDate);
         const dayPattern = schedule.dayPattern;
@@ -438,6 +442,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Process message with OpenAI
     const processOpenAIMessage = async (message, apiKey) => {
+        if (!isEducationRelated(message)) {
+            return "I can only answer questions about school-related topics. Please ask me about your schedule, classes, or other educational matters.";
+        }
+        
         const targetDate = parseDateQuery(message);
         const schedule = getScheduleInfo(targetDate);
         const isWeekendOrHoliday = schedule.isWeekend || schedule.isHoliday;
@@ -642,3 +650,184 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFromLocalStorage();
     startPeriodicUpdate();
 });
+
+function isEducationRelated(question) {
+    const educationKeywords = [
+        'school', 'class', 'homework', 'teacher', 'grade', 'study',
+        'exam', 'test', 'assignment', 'course', 'tdsb', 'brightspace',
+        'classroom', 'subject', 'learning', 'education', 'period',
+        'schedule', 'day 1', 'day 2', 'semester'
+    ];
+
+    const offTopicKeywords = [
+        'food', 'pizza', 'movie', 'game', 'sport', 'weather', 'music',
+        'favorite', 'like', 'hate', 'love', 'think about', 'opinion',
+        'best', 'worst', 'politics', 'religion'
+    ];
+    
+    // Check if question contains off-topic keywords
+    if (offTopicKeywords.some(keyword => 
+        question.toLowerCase().includes(keyword.toLowerCase()))) {
+        return false;
+    }
+    
+    // Must contain at least one education keyword
+    return educationKeywords.some(keyword => 
+        question.toLowerCase().includes(keyword.toLowerCase()));
+}
+
+// Update both API processing functions to include the off-topic check
+async function processGroqMessage(message, apiKey) {
+    if (!isEducationRelated(message)) {
+        return "I can only answer questions about school-related topics. Please ask me about your schedule, classes, or other educational matters.";
+    }
+    
+    const targetDate = parseDateQuery(message);
+    const schedule = getScheduleInfo(targetDate);
+    const dayPattern = schedule.dayPattern;
+    const isWeekendOrHoliday = schedule.isWeekend || schedule.isHoliday;
+
+    // Get current periods from storage
+    const currentPeriods = getPeriodsFromStorage();
+    const day1Schedule = currentPeriods;
+    const day2Schedule = currentPeriods.map((p, index) => {
+        if (index < 2) return { ...p };
+        const swappedIndex = index === 2 ? 3 : 2;
+        return {
+            period: index + 1,
+            class: currentPeriods[swappedIndex].class
+        };
+    });
+
+    const systemPrompt = `You are a helpful AI assistant that helps students with their TDSB high school schedule. 
+    When responding about schedules:
+    1. ALWAYS format the day as "Day X" (never just the number)
+    2. ALWAYS list ALL periods and classes for the requested date
+    3. Mention if it's a late start day
+    
+    Current schedule information for ${schedule.currentDate}:
+    ${isWeekendOrHoliday ? 
+        `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
+        The next school day will be ${schedule.nextSchoolDate}, which will be Day ${dayPattern.dayNumber} with the following schedule:` : 
+        `This is Day ${dayPattern.dayNumber} with the following schedule:`
+    }
+    
+    ${schedule.periods.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
+    ${schedule.isLateStart ? '\nThis is a Late Start day!' : ''}
+    ${schedule.isHoliday ? `\nThis is a holiday: ${dayPattern.name}` : ''}
+
+    When answering:
+    1. Start with the date and day pattern
+    2. List ALL periods and their classes
+    3. Mention if it's a late start day
+    4. Format response as:
+       "On [Date], Day [1/2]:
+       Period 1: [Class]
+       Period 2: [Class]
+       Period 3: [Class]
+       Period 4: [Class]
+       [Late Start notice if applicable]"`;
+
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'mixtral-8x7b-32768',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: message }
+                ],
+                temperature: 0.7,
+                max_tokens: 150,
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Groq API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error('Groq API Error:', error);
+        throw error;
+    }
+}
+
+// Process message with OpenAI
+const processOpenAIMessage = async (message, apiKey) => {
+    if (!isEducationRelated(message)) {
+        return "I can only answer questions about school-related topics. Please ask me about your schedule, classes, or other educational matters.";
+    }
+    
+    const targetDate = parseDateQuery(message);
+    const schedule = getScheduleInfo(targetDate);
+    const isWeekendOrHoliday = schedule.isWeekend || schedule.isHoliday;
+    
+    const systemPrompt = `You are a helpful AI assistant that helps students with their school schedule. 
+    When responding about schedules:
+    1. ALWAYS format the day as "Day X" (never just the number)
+    2. ALWAYS list ALL periods and classes for the requested date
+    3. Mention if it's a late start day
+    
+    Current schedule information for ${schedule.currentDate}:
+    ${isWeekendOrHoliday ? 
+        `Note: This is a ${schedule.isWeekend ? 'weekend' : 'holiday'}. 
+        The next school day will be ${schedule.nextSchoolDate}, which will be Day ${schedule.dayPattern.dayNumber} with the following schedule:` : 
+        `This is Day ${schedule.dayPattern.dayNumber} with the following schedule:`
+    }
+    
+    ${schedule.periods.map(p => `Period ${p.period}: ${p.class}`).join('\n')}
+    ${schedule.isLateStart ? '\nThis is a Late Start day!' : ''}
+    ${schedule.isHoliday ? `\nThis is a holiday: ${schedule.dayPattern.name}` : ''}
+
+    When answering:
+    1. Start with the date and day pattern
+    2. List ALL periods and their classes
+    3. Mention if it's a late start day
+    4. Format response as:
+       "On [Date], Day [1/2]:
+       Period 1: [Class]
+       Period 2: [Class]
+       Period 3: [Class]
+       Period 4: [Class]
+       [Late Start notice if applicable]"`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: message }
+            ],
+            temperature: 0.7,
+            max_tokens: 150
+        })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'OpenAI API request failed');
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+};
+
+async function handleUserInput(userInput) {
+    if (!isEducationRelated(userInput)) {
+        return "I can only answer questions related to school and education. Please try asking something about your studies!";
+    }
+    
+    // ...existing code for AI processing...
+}
