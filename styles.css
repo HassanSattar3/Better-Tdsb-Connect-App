@@ -1553,14 +1553,10 @@ body.dark-mode .provider-button:hover:not(.active) {
   margin-bottom: 100px; /* Add space between messages and input */
 }
 
-/* Update Chat Input Container Position */
 .chat-input-container {
-  position: fixed;
-  bottom: 85px; /* Changed from 5px to 85px to move it lower by 80px */
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 600px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
