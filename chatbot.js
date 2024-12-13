@@ -793,11 +793,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const adjustChatInputPosition = () => {
         const chatInputContainer = document.querySelector('.chat-input-container');
         if (window.innerWidth <= 480) {
-            chatInputContainer.style.bottom = '60px';
-        } else if (window.innerWidth <= 320) {
-            chatInputContainer.style.bottom = '55px';
+            // On mobile devices, position the chat input container below the chat messages
+            chatInputContainer.style.position = 'relative';
+            chatInputContainer.style.bottom = '0';
         } else {
-            chatInputContainer.style.bottom = '5px'; // Adjusted for desktop
+            // Always 5px below the chat messages on desktop
+            chatInputContainer.style.position = 'fixed';
+            chatInputContainer.style.bottom = '5px';
         }
     };
 
