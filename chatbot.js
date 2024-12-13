@@ -811,7 +811,7 @@ function isEducationRelated(question) {
         'school', 'class', 'homework', 'teacher', 'grade', 'study',
         'exam', 'test', 'assignment', 'course', 'tdsb', 'brightspace',
         'classroom', 'subject', 'learning', 'education', 'period',
-        'schedule', 'day 1', 'day 2', 'semester'
+        'schedule', 'day 1', 'day 2', 'semester', 'day'
     ];
 
     const offTopicKeywords = [
