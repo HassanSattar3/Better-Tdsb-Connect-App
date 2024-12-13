@@ -985,6 +985,4 @@ async function handleUserInput(userInput) {
     if (!isEducationRelated(userInput)) {
         return "I can only answer questions related to school and education. Please try asking something about your studies!";
     }
-    
-    // ...existing code for AI processing...
 }
