@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-message');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInputContainer = document.querySelector('.chat-input-container');
 
     let currentProvider = 'openai';
     let isProcessing = false;
@@ -790,22 +792,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to adjust chat input container position based on device type
-    const adjustChatInputPosition = () => {
-        const chatInputContainer = document.querySelector('.chat-input-container');
-        if (window.innerWidth <= 480) {
-            // On mobile devices, position the chat input container below the chat messages
-            chatInputContainer.style.position = 'relative';
-            chatInputContainer.style.bottom = '0';
-        } else {
-            // Always 5px below the chat messages on desktop
-            chatInputContainer.style.position = 'fixed';
-            chatInputContainer.style.bottom = '5px';
-        }
-    };
-
-    // Call the function on load and on resize
+  const adjustChatInputPosition = () => {
+    const chatMessagesHeight = chatMessages.scrollHeight;
+    const chatInputHeight = chatInputContainer.offsetHeight;
+    chatMessages.style.paddingBottom = `${chatInputHeight}px`;
+    chatInputContainer.style.top = `${chatMessagesHeight}px`;
+  };
+    
     adjustChatInputPosition();
-    window.addEventListener('resize', adjustChatInputPosition);
+  window.addEventListener('resize', adjustChatInputPosition);
+  chatMessages.addEventListener('DOMNodeInserted', adjustChatInputPosition);
 });
 
 function isEducationRelated(question) {
