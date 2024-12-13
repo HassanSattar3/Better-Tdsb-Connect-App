@@ -1556,7 +1556,7 @@ body.dark-mode .provider-button:hover:not(.active) {
 /* Update Chat Input Container Position */
 .chat-input-container {
   position: fixed;
-  bottom: 65px; /* Lowered from 80px/100px to 65px */
+  bottom: 5px; /* Adjusted for desktop */
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 32px);
@@ -1591,7 +1591,7 @@ body.dark-mode .provider-button:hover:not(.active) {
 /* PWA Specific Styles */
 @media (display-mode: standalone) {
   .chat-input-container {
-    bottom: calc(65px + env(safe-area-inset-bottom)); /* Adjust for PWA */
+    bottom: calc(80px + env(safe-area-inset-bottom)); /* Increased from 60px to 80px */
   }
 }
 
@@ -2446,4 +2446,144 @@ body.dark-mode .chat-messages::-webkit-scrollbar-thumb {
 
 body.dark-mode .chat-messages::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
+}
+
+/* Microphone button styles */
+#mic-button {
+    display: flex !important; /* Force display */
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-right: 8px;
+}
+
+#mic-button svg {
+    width: 20px;
+    height: 20px;
+    pointer-events: none; /* Prevent SVG from blocking clicks */
+}
+
+#mic-button:hover {
+    color: #4CAF50;
+    transform: scale(1.1);
+}
+
+#mic-button.recording {
+    color: #ff4444;
+    animation: pulse 1.5s infinite;
+}
+
+body.dark-mode #mic-button {
+    color: #999;
+}
+
+body.dark-mode #mic-button:hover {
+    color: #4CAF50;
+}
+
+/* Microphone button styles */
+#mic-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+#mic-button:hover {
+  color: #333;
+}
+
+#mic-button.recording {
+  color: #ff4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Update chat input container */
+.chat-input-container {
+    position: fixed;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Enhanced microphone button styles */
+#mic-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+
+#mic-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+#mic-button:hover {
+    color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+#mic-button.recording {
+    color: #ff4444;
+    animation: pulse 1.5s infinite;
+    background-color: rgba(255, 68, 68, 0.1);
+}
+
+/* Dark mode microphone button */
+body.dark-mode #mic-button {
+    color: #999;
+}
+
+body.dark-mode #mic-button:hover {
+    color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+body.dark-mode #mic-button.recording {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.2);
 }

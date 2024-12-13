@@ -54,6 +54,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Schedule Configuration
+    const getLastTwoWednesdaysOfMonth = (year, month) => {
+        const wednesdays = [];
+        const date = new Date(year, month + 1, 0); // Last day of the month
+
+        while (date.getMonth() === month) {
+            if (date.getDay() === 3) { // Wednesday is 3
+                wednesdays.push(new Date(date));
+            }
+            date.setDate(date.getDate() - 1);
+        }
+
+        // Return the last two Wednesdays (most recent first)
+        return wednesdays.slice(0, 2).reverse();
+    };
+
+    // Generate late starts for the academic year
+    const generateLateStarts = () => {
+        const lateStarts = {};
+        
+        // Generate for each month from September to June
+        for (let month = 8; month <= 11; month++) { // September to December 2024
+            const wednesdays = getLastTwoWednesdaysOfMonth(2024, month);
+            wednesdays.forEach(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
+            });
+        }
+        
+        for (let month = 0; month <= 5; month++) { // January to June 2025
+            const wednesdays = getLastTwoWednesdaysOfMonth(2025, month);
+            wednesdays.forEach(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
+            });
+        }
+        
+        return lateStarts;
+    };
+
     const scheduleConfig = {
         semester1Start: '2024-09-03', // First semester start
         semester1End: '2025-01-30',   // First semester end
@@ -74,9 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Late starts - Add actual dates when available
             '2024-09-19': { type: 'late_start', name: 'Late Start' },
             '2024-10-17': { type: 'late_start', name: 'Late Start' },
-            '2024-11-21': { type: 'late_start', name: 'Late Start' },
+            '2024-12-11': { type: 'late_start', name: 'Late Start' },
             '2024-12-19': { type: 'late_start', name: 'Late Start' },
-            '2025-01-16': { type: 'late_start', name: 'Late Start' }
+            '2025-01-16': { type: 'late_start', name: 'Late Start' },
+            ...generateLateStarts() // Add dynamic late starts
         },
         referenceDay1: '2023-12-08' // Keep December 8th as Day 1 reference
     };
@@ -529,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Handle send message
-    const handleSend = async () => {
+    const handleSend = async (withAudio = false) => {
         const message = chatInput.value.trim();
         if (!message || isProcessing) return;
 
@@ -549,6 +589,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? processGroqMessage(message, apiKey)
                 : processOpenAIMessage(message, apiKey));
             addMessage(response, false);
+
+            // Speak the response if audio was requested
+            if (withAudio) {
+                speakText(response);
+            }
         } catch (error) {
             addMessage(`Error: ${error.message}`, false);
             console.error('Error:', error);
@@ -568,6 +613,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             openaiGroup.classList.toggle('hidden', provider !== 'openai');
             groqGroup.classList.toggle('hidden', provider !== 'groq');
+            
+            // Make sure the mic button stays visible
+            const micButton = document.getElementById('mic-button');
+            if (micButton) {
+                micButton.style.display = 'flex';
+            }
         });
     });
 
@@ -636,6 +687,12 @@ document.addEventListener('DOMContentLoaded', () => {
             chatbotNavLink.addEventListener('click', () => {
                 updateFromLocalStorage();
                 showBetaNotification();
+                
+                // Make sure the mic button stays visible
+                const micButton = document.getElementById('mic-button');
+                if (micButton) {
+                    micButton.style.display = 'flex';
+                }
             });
         }
 
@@ -643,12 +700,110 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.location.hash === '#chatbot') {
             updateFromLocalStorage();
             showBetaNotification();
+            
+            // Make sure the mic button stays visible
+            const micButton = document.getElementById('mic-button');
+            if (micButton) {
+                micButton.style.display = 'flex';
+            }
         }
     };
 
     // Initialize
     updateFromLocalStorage();
     startPeriodicUpdate();
+
+    // Instead, get the existing mic button
+    const micButton = document.getElementById('mic-button');
+
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+
+    // Initialize speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+
+    // Initialize speech synthesis
+    const synth = window.speechSynthesis;
+
+    // Handle microphone button click
+    micButton.addEventListener('click', () => {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    function startRecording() {
+        isRecording = true;
+        micButton.classList.add('recording');
+        recognition.start();
+    }
+
+    function stopRecording() {
+        isRecording = false;
+        micButton.classList.remove('recording');
+        recognition.stop();
+    }
+
+    // Handle speech recognition results
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        chatInput.value = transcript;
+        handleSend(true); // Pass true to indicate we want audio response
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        addMessage('Error: Could not understand audio input', false);
+        stopRecording();
+    };
+
+    // Text-to-speech function
+    function speakText(text) {
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        synth.speak(utterance);
+    }
+
+    // Add audio control functions
+    function stopSpeaking() {
+        if (synth.speaking) {
+            synth.cancel();
+        }
+    }
+
+    // Event listener for stopping speech when new recording starts
+    micButton.addEventListener('mousedown', () => {
+        stopSpeaking();
+    });
+
+    // Function to adjust chat input container position based on device type
+    const adjustChatInputPosition = () => {
+        const chatInputContainer = document.querySelector('.chat-input-container');
+        if (window.innerWidth <= 480) {
+            chatInputContainer.style.bottom = '60px';
+        } else if (window.innerWidth <= 320) {
+            chatInputContainer.style.bottom = '55px';
+        } else {
+            chatInputContainer.style.bottom = '5px'; // Adjusted for desktop
+        }
+    };
+
+    // Call the function on load and on resize
+    adjustChatInputPosition();
+    window.addEventListener('resize', adjustChatInputPosition);
 });
 
 function isEducationRelated(question) {
