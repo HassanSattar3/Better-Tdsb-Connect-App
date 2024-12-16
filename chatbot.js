@@ -69,29 +69,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return wednesdays.slice(0, 2).reverse();
     };
 
-    // Generate late starts for the academic year
-    const generateLateStarts = () => {
-        const lateStarts = {};
-        
-        // Generate for each month from September to June
-        for (let month = 8; month <= 11; month++) { // September to December 2024
-            const wednesdays = getLastTwoWednesdaysOfMonth(2024, month);
-            wednesdays.forEach(date => {
-                const dateStr = date.toISOString().split('T')[0];
-                lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
-            });
-        }
-        
-        for (let month = 0; month <= 5; month++) { // January to June 2025
-            const wednesdays = getLastTwoWednesdaysOfMonth(2025, month);
-            wednesdays.forEach(date => {
-                const dateStr = date.toISOString().split('T')[0];
-                lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
-            });
-        }
-        
-        return lateStarts;
-    };
+  const generateLateStarts = () => {
+    const lateStarts = {};
+
+    // Generate for each month from September to June
+    for (let month = 8; month <= 11; month++) { // September to December 2024
+        const wednesdays = getLastTwoWednesdaysOfMonth(2024, month);
+        wednesdays.forEach(date => {
+            const dateStr = date.toISOString().split('T')[0];
+            const isHoliday = scheduleConfig.specialDates[dateStr]?.type === 'holiday';
+            if (month === 11 && date.getDate() > 24 || isHoliday) return; // Skip the last week of December and holidays
+            lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
+        });
+    }
+
+    for (let month = 0; month <= 5; month++) { // January to June 2025
+        const wednesdays = getLastTwoWednesdaysOfMonth(2025, month);
+        wednesdays.forEach(date => {
+            const dateStr = date.toISOString().split('T')[0];
+            const isHoliday = scheduleConfig.specialDates[dateStr]?.type === 'holiday';
+            if (isHoliday) return; // Skip holidays
+            lateStarts[dateStr] = { type: 'late_start', name: 'Late Start' };
+        });
+    }
+
+    return lateStarts;
+};
 
     const scheduleConfig = {
         semester1Start: '2024-09-03', // First semester start
