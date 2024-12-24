@@ -2251,6 +2251,319 @@ body.dark-mode .api-key-container {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+body.dark-mode .api-key-input {
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+body.dark-mode .api-key-input:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+body.dark-mode .save-button {
+  background: #4CAF50;
+  color: #ffffff;
+}
+
+body.dark-mode .save-button:hover {
+  background: #45a049;
+}
+
+body.dark-mode .chat-messages {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .message.user {
+  background: #4CAF50;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+body.dark-mode .message.assistant {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .chat-input-container {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode #chat-input {
+  background: transparent;
+  color: #ffffff;
+}
+
+body.dark-mode #chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode #send-message {
+  color: #4CAF50;
+}
+
+body.dark-mode #send-message:hover {
+  color: #45a049;
+}
+
+body.dark-mode .loading-dot {
+  background-color: #4CAF50;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  #chatbot {
+    padding: 16px 12px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  .chat-container {
+    height: calc(100vh - 280px);
+    padding-bottom: 70px;
+  }
+
+  .chat-messages {
+    margin-bottom: 90px; /* Adjusted for mobile */
+  }
+
+  .chat-input-container {
+    bottom: calc(75px + env(safe-area-inset-bottom)); /* Adjusted for mobile */
+    padding: 8px 12px;
+  }
+}
+
+/* Small Screen Optimizations */
+@media (max-width: 320px) {
+  #chatbot {
+    padding: 12px 8px;
+    padding-bottom: calc(130px + env(safe-area-inset-bottom));
+  }
+
+  .chat-input-container {
+    left: 8px;
+    right: 8px;
+    padding: 6px 10px;
+  }
+
+  #chat-input {
+    padding: 6px 10px;
+  }
+
+  .api-key-container {
+    padding: 16px;
+  }
+
+  .provider-button {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+
+  .message {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+}
+
+/* PWA Specific Styles */
+@media (display-mode: standalone) {
+  #chatbot {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .chat-input-container {
+    bottom: calc(80px + env(safe-area-inset-bottom)); /* Increased from 60px to 80px */
+  }
+}
+
+/* Message Animation */
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced Dark Mode Text Visibility */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode .navbar a,
+body.dark-mode #timetable-items div,
+body.dark-mode .calendar-container td,
+body.dark-mode .month-header,
+body.dark-mode #day-indicator,
+body.dark-mode .period-label,
+body.dark-mode .period-text,
+body.dark-mode #chat-input,
+body.dark-mode .message.assistant {
+  color: #ffffff;
+}
+
+/* Enhanced Chatbot Animations and Styling */
+.chat-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message {
+  transform-origin: bottom;
+  animation: messageScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+@keyframes messageScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.chat-input-container {
+  transform: translateY(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+}
+
+.chat-input-container:focus-within {
+  transform: translateY(-4px);
+}
+
+#send-message {
+  transform: scale(1);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+#send-message:hover {
+  transform: scale(1.1);
+}
+
+#send-message:active {
+  transform: scale(0.95);
+}
+
+/* Premium Loading Animation */
+.loading-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  animation: loadingAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: loadingPulse 1.4s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes loadingAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced Message Hover Effects */
+.message {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.message:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .message:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth Scroll Behavior */
+.chat-messages {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+body.dark-mode .chat-messages {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+body.dark-mode .chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced Input Focus States */
+#chat-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #chat-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced Chatbot Dark Mode Styles */
+body.dark-mode #chatbot {
+  background-color: #121212;
+}
+
+body.dark-mode .api-key-container {
+  background: rgba(45, 45, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
 body.dark-mode .api-provider-selector {
   background: rgba(255, 255, 255, 0.05);
 }
