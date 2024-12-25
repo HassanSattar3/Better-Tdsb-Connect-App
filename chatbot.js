@@ -810,6 +810,53 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add some extra spacing (e.g., 60px) to avoid overlap
         chatMessages.style.maxHeight = `calc(100vh - ${inputHeight + 60}px)`;
     }
+
+    // Add keyboard event handlers for mobile
+    if ('virtualKeyboard' in navigator) {
+        navigator.virtualKeyboard.overlaysContent = true;
+    }
+
+    // Adjust chat container when virtual keyboard shows/hides
+    const adjustForKeyboard = (isKeyboardVisible) => {
+        const chatContainer = document.querySelector('.chat-container');
+        const messages = document.querySelector('.chat-messages');
+        
+        if (isKeyboardVisible) {
+            chatContainer.style.paddingBottom = '0px';
+            messages.scrollTop = messages.scrollHeight;
+        } else {
+            chatContainer.style.paddingBottom = '';
+        }
+    };
+
+    // Handle focus/blur events for keyboard
+    chatInput.addEventListener('focus', () => {
+        setTimeout(() => {
+            adjustForKeyboard(true);
+            window.scrollTo(0, 0);
+        }, 100);
+    });
+
+    chatInput.addEventListener('blur', () => {
+        adjustForKeyboard(false);
+    });
+
+    // Prevent body scroll when interacting with chat
+    chatMessages.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+    }, { passive: true });
+
+    // Handle mobile browser chrome visibility
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > lastScrollTop) {
+            document.body.style.paddingBottom = '0';
+        } else {
+            document.body.style.paddingBottom = '';
+        }
+        lastScrollTop = currentScroll;
+    }, { passive: true });
 });
 
 function isEducationRelated(question) {
