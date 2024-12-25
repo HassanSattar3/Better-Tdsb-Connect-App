@@ -790,22 +790,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to adjust chat input container position based on device type
-    const adjustChatInputPosition = () => {
-        const chatInputContainer = document.querySelector('.chat-input-container');
-        if (window.innerWidth <= 480) {
-            // On mobile devices, position the chat input container below the chat messages
-            chatInputContainer.style.position = 'relative';
-            chatInputContainer.style.bottom = '0';
-        } else {
-            // Always 5px below the chat messages on desktop
-            chatInputContainer.style.position = 'fixed';
-            chatInputContainer.style.bottom = '5px';
-        }
-    };
+    function adjustChatInputPosition() {
+        // Removed dynamic positioning so new CSS can handle layout
+    }
 
     // Call the function on load and on resize
     adjustChatInputPosition();
     window.addEventListener('resize', adjustChatInputPosition);
+
+    window.addEventListener('load', adjustChatMessagesHeight);
+    window.addEventListener('resize', adjustChatMessagesHeight);
+
+    function adjustChatMessagesHeight() {
+        const chatInput = document.querySelector('.chat-input-container');
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatInput || !chatMessages) return;
+
+        const inputHeight = chatInput.getBoundingClientRect().height;
+        // Add some extra spacing (e.g., 60px) to avoid overlap
+        chatMessages.style.maxHeight = `calc(100vh - ${inputHeight + 60}px)`;
+    }
 });
 
 function isEducationRelated(question) {
