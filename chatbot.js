@@ -568,10 +568,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return loadingDiv;
     };
 
-    // Handle send message
+    // Update handleSend to reset microphone state
     const handleSend = async (withAudio = false) => {
         const message = chatInput.value.trim();
         if (!message || isProcessing) return;
+
+        // Reset microphone state when sending message
+        stopRecording();
+        micButton.classList.remove('recording');
+        isRecording = false;
 
         const apiKey = localStorage.getItem(`${currentProvider}_api_key`);
         if (!apiKey) {
